@@ -6004,7 +6004,7 @@ TempGUI2GuiClose:
 Gui, TempGUI2:Destroy
 return
 Variables:
-Version := "3.0.0"
+Version := "2.1"
 Build := 84
 active := 1
 ;INIFile := A_ScriptDir "\keybinder.ini"
@@ -7855,7 +7855,7 @@ if(FileExist(INIFile))
 ExitApp
 return
 GuiShow:
-Gui, 1:Show,, sBinder %Version%-%Build% SA-MP 0.3.DL fixed v2.1
+Gui, 1:Show,, sBinder - 0.3.DL - v%Version%
 return
 
 ::/reconnect::
