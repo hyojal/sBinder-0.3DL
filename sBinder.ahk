@@ -7855,7 +7855,7 @@ if(FileExist(INIFile))
 ExitApp
 return
 GuiShow:
-Gui, 1:Show,, sBinder - 0.3.DL - v%Version%
+Gui, 1:Show,, sBinder - 0.3DL - v%Version%
 return
 
 ::/reconnect::
