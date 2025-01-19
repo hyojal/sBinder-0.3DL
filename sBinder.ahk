@@ -57,7 +57,7 @@ global ADDR_VEHICLE_Y               := 0x48          ;Vehicle Speed Y
 global ADDR_VEHICLE_Z               := 0x4C          ;Vehicle Speed Z
 global oAirplaneModels := [417, 425, 447, 460, 469, 476, 487, 488, 497, 511, 512, 513, 519, 520, 548, 553, 563, 577, 592, 593]
 global oBikeModels := [481,509,510]
-global ovehicleNames := ["Landstalker","Bravura","Buffalo","Linerunner","Perrenial","Sentinel","Dumper","Firetruck","Trashmaster","Stretch","Manana","Infernus","Voodoo","Pony","Mule","Cheetah","Ambulance","Leviathan","Moonbeam","Esperanto","Taxi","Washington","Bobcat","Whoopee","BFInjection","Hunter","Premier","Enforcer","Securicar","Banshee","Predator","Bus","Rhino","Barracks","Hotknife","Trailer","Previon","Coach","Cabbie","Stallion","Rumpo","RCBandit","Romero","Packer","Monster","Admiral","Squalo","Seasparrow","Pizzaboy","Tram","Trailer","Turismo","Speeder","Reefer","Tropic","Flatbed","Yankee","Caddy","Solair","Berkley'sRCVan","Skimmer","PCJ-600","Faggio","Freeway","RCBaron","RCRaider","Glendale","Oceanic","Sanchez","Sparrow","Patriot","Quad","Coastguard","Dinghy","Hermes","Sabre","Rustler","ZR-350","Walton","Regina","Comet","BMX","Burrito","Camper","Marquis","Baggage","Dozer","Maverick","NewsChopper","Rancher","FBIRancher","Virgo","Greenwood","Jetmax","Hotring","Sandking","BlistaCompact","Polizei Maverick","Boxvillde","Benson","Mesa","RCGoblin","HotringRacerA","HotringRacerB","BloodringBanger","Rancher","SuperGT","Elegant","Journey","Bike","MountainBike","Beagle","Cropduster","Stunt","Tanker","Roadtrain","Nebula","Majestic","Buccaneer","Shamal","Hydra","FCR-900","NRG-500","HPV1000","CementTruck","TowTruck","Fortune","Cadrona","FBITruck","Willard","Forklift","Tractor","Combine","Feltzer","Remington","Slamvan","Blade","Freight","Streak","Vortex","Vincent","Bullet","Clover","Sadler","Firetruck","Hustler","Intruder","Primo","Cargobob","Tampa","Sunrise","Merit","Utility","Nevada","Yosemite","Windsor","Monster","Monster","Uranus","Jester","Sultan","Stratum","Elegy","Raindance","RCTiger","Flash","Tahoma","Savanna","Bandito","FreightFlat","StreakCarriage","Kart","Mower","Dune","Sweeper","Broadway","Tornado","AT-400","DFT-30","Huntley","Stafford","BF-400","NewsVan","Tug","Trailer","Emperor","Wayfarer","Euros","Hotdog","Club","FreightBox","Trailer","Andromada","Dodo","RCCam","Launch","LSPD Auto","SFPD Auto","LVPD Auto","Polizei Ranger","Picador","S.W.A.T","Alpha","Phoenix","GlendaleShit","SadlerShit","Luggage","Luggage","Stairs","Boxville","Tiller","UtilityTrailer"]
+global ovehicleNames := ["Landstalker","Bravura","Buffalo","Linerunner","Perrenial","Sentinel","Dumper","Firetruck","Trashmaster","Stretch","Manana","Infernus","Voodoo","Pony","Mule","Cheetah","Ambulance","Leviathan","Moonbeam","Esperanto","Taxi","Washington","Bobcat","Whoopee","BFInjection","Hunter","Premier","Enforcer","Securicar","Banshee","Predator","Bus","Rhino","Barracks","Hotknife","Trailer","Previon","Coach","Cabbie","Stallion","Rumpo","RCBandit","Romero","Packer","Monster","Admiral","Squalo","Seasparrow","Pizzaboy","Tram","Trailer","Turismo","Speeder","Reefer","Tropic","Flatbed","Yankee","Caddy","Solair","Berkley'sRCVan","Skimmer","PCJ-600","Faggio","Freeway","RCBaron","RCRaider","Glendale","Oceanic","Sanchez","Sparrow","Patriot","Quad","Coastguard","Dinghy","Hermes","Sabre","Rustler","ZR-350","Walton","Regina","Comet","BMX","Burrito","Camper","Marquis","Baggage","Dozer","Maverick","NewsChopper","Rancher","FBIRancher","Virgo","Greenwood","Jetmax","Hotring","Sandking","BlistaCompact","Polizei Maverick","Boxvillde","Benson","Mesa","RCGoblin","HotringRacerA","HotringRacerB","BloodringBanger","Rancher","SuperGT","Elegant","Journey","Bike","MountainBike","Beagle","Cropduster","Stunt","Tanker","Roadtrain","Nebula","Majestic","Buccaneer","Shamal","Hydra","FCR-900","NRG-500","HPV1000","CementTruck","TowTruck","Fortune","Cadrona","FBITruck","Willard","Forklift","Tractor","Combine","Feltzer","Remington","Slamvan","Blade","Freight","Streak","Vortex","Vincent","Bullet","Clover","Sadler","Firetruck","Hustler","Intruder","Primo","Cargobob","Tampa","Sunrise","Merit","Utility","Nevada","Yosemite","Windsor","Monster","Monster","Uranus","Jester","Sultan","Stratum","Elegy","Raindance","RCTiger","Flash","Tahoma","Savanna","Bandito","FreightFlat","StreakCarriage","Kart","Mower","Dune","Sweeper","Broadway","Tornado","AT-400","DFT-30","Huntley","Stafford","BF-400","NewsVan","Tug","Trailer","Emperor","Wayfarer","Euros","Hotdog","Club","FreightBox","Trailer","Andromada","Dodo","RCCam","Launch","LS-Streifenwagen","SF-Streifenwagen","LV-Streifenwagen","Polizei Ranger","Picador","S.W.A.T","Alpha","Phoenix","GlendaleShit","SadlerShit","Luggage","Luggage","Stairs","Boxville","Tiller","UtilityTrailer"]
 global oweaponNames := ["Fist","Brass Knuckles","Golf Club","Nightstick","Knife","Baseball Bat","Shovel","Pool Cue","Katana","Chainsaw","Purple Dildo","Dildo","Vibrator","Silver Vibrator","Flowers","Cane","Grenade","Tear Gas","Molotov Cocktail", "", "", "", "9mm","Silenced 9mm","Desert Eagle","Shotgun","Sawnoff Shotgun","Combat Shotgun","Micro SMG/Uzi","MP5","AK-47","M4","Tec-9","Country Rifle","Sniper Rifle","RPG","HS Rocket","Flamethrower","Minigun","Satchel Charge","Detonator","Spraycan","Fire Extinguisher","Camera","Night Vis Goggles","Thermal Goggles","Parachute"]
 global oradiostationNames := ["Playback FM", "K Rose", "K-DST", "Bounce FM", "SF-UR", "Radio Los Santos", "Radio X", "CSR 103.9", "K-JAH West", "Master Sounds 98.3", "WCTR Talk Radio", "User Track Player", "Radio Off"]
 global oweatherNames := ["EXTRASUNNY_LA", "SUNNY_LA", "EXTRASUNNY_SMOG_LA", "SUNNY_SMOG_LA", "CLOUDY_LA", "SUNNY_SF", "EXTRASUNNY_SF", "CLOUDY_SF", "RAINY_SF", "FOGGY_SF", "SUNNY_VEGAS", "EXTRASUNNY_VEGAS", "CLOUDY_VEGAS", "EXTRASUNNY_COUNTRYSIDE", "SUNNY_COUNTRYSIDE", "CLOUDY_COUNTRYSIDE", "RAINY_COUNTRYSIDE", "EXTRASUNNY_DESERT", "SUNNY_DESERT", "SANDSTORM_DESERT", "UNDERWATER", "EXTRACOLOURS_1", "EXTRACOLOURS_2"]
@@ -5537,18 +5537,18 @@ if(getNumberOfPassengers()<1)
 if(InStr(chat,"VS » ") AND IsMarkerCreated())
 return "INC « Aus Richtung " GetPlayerZone() " ("Round(GetDist(GetPlayerCoordinates(),CoordsFromRedmarker()))"m). Mit " GetVehicleModelName()" auf dem Weg"
 else
-return "INC « Aus Richtung " GetPlayerZone() ". Unterwegs im " GetVehicleModelName()
+return "INC « Aus Richtung " GetPlayerZone() ". Unterwegs mit " GetVehicleModelName()
 
 else if(getNumberOfPassengers()==1)
 if(InStr(chat,"VS » ") AND IsMarkerCreated())
-return "INC « Aus Richtung " GetPlayerZone() " ("Round(GetDist(GetPlayerCoordinates(),CoordsFromRedmarker()))"m). Unterwegs im " GetVehicleModelName() ", mit " getNumberOfPassengers()" Beifahrer"
+return "INC « Aus Richtung " GetPlayerZone() " ("Round(GetDist(GetPlayerCoordinates(),CoordsFromRedmarker()))"m). Unterwegs mit " GetVehicleModelName() " und " getNumberOfPassengers()" Beifahrer"
 else
-return "INC « Aus Richtung " GetPlayerZone() ". Unterwegs im " GetVehicleModelName() ", mit " getNumberOfPassengers()" Beifahrer"
+return "INC « Aus Richtung " GetPlayerZone() ". Unterwegs mit " GetVehicleModelName() " und " getNumberOfPassengers()" Beifahrer"
 else
 if(InStr(chat,"VS » ") AND IsMarkerCreated())
-return "INC « Aus Richtung " GetPlayerZone() " ("Round(GetDist(GetPlayerCoordinates(),CoordsFromRedmarker()))"m). Unterwegs im " GetVehicleModelName() ", mit " getNumberOfPassengers()" Beifahrern"
+return "INC « Aus Richtung " GetPlayerZone() " ("Round(GetDist(GetPlayerCoordinates(),CoordsFromRedmarker()))"m). Unterwegs mit " GetVehicleModelName() " und " getNumberOfPassengers()" Beifahrern"
 else
-return "INC « Aus Richtung " GetPlayerZone() ". Unterwegs im " GetVehicleModelName() ", mit " getNumberOfPassengers()" Beifahrern"
+return "INC « Aus Richtung " GetPlayerZone() ". Unterwegs mit " GetVehicleModelName() " und " getNumberOfPassengers()" Beifahrer"
 
 else
 if(InStr(chat,"VS » ") AND IsMarkerCreated())
@@ -6004,7 +6004,7 @@ TempGUI2GuiClose:
 Gui, TempGUI2:Destroy
 return
 Variables:
-Version := "2.1"
+Version := "2.2"
 Build := 84
 active := 1
 ;INIFile := A_ScriptDir "\keybinder.ini"
@@ -7755,7 +7755,7 @@ loop, %MaxOverlays%
 GetChatLine(0, chat)
 if(InStr(chat,"SERVER: Du hast gerade einen Mord begangen. Achtung!") AND !InStr(chat, "sagt") AND !InStr(chat, ")") AND !InStr(chat, "*") AND !InStr(chat, "schreit") AND !InStr(chat, "flüstert")){
 IniRead, message, %INIFile%, Settings, Killbinder
-if(message!="")
+if((message!="") AND (message!="ERROR"))
 {
 BindReplace(message)
 }
@@ -8464,8 +8464,12 @@ cmd := FrakCmd := helptexts := tempvar := notenum := ""
 return
 ::/killbinder::
 Suspend Permit
-message := PlayerInput("Gib eine Killmessage ein: ")
+message := PlayerInput("Gib einen Killbind ein: ")
 IniWrite, %message%, %INIFile%, Settings, Killbinder
+if(message!="")
+AddChatMessage("Aktueller Bind: "message)
+else
+AddChatMessage("Killbinder deaktiviert")
 return
 ::/kcmd::
 Suspend Permit
@@ -10435,6 +10439,10 @@ if(IsFrak(2, 1)){
 		BindReplace("/r » Code 5 - Notruf " (chat1 ? " von " chat1 : "") " angenommen (Ort: " chat2 ") «")
 	}
 }
+plus5()
+{
+
+}
 return
 /*
 ö::
@@ -10453,3 +10461,4 @@ FileAppend, % (n := PlayerInput("Gib den Namen des Ortes ein: ")) "|" Round(x) "
 AddChatMessage(n " wurde erfolgreich gespeichert")
 AddChatMessage(Round(x) ", " Round(y) ", " Round(z))
 return
+
