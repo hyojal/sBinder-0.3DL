@@ -10619,6 +10619,22 @@ return
 Suspend Permit
 SendChat("/frisk " GetClosestPlayerId())
 return
+::/stakedrogen::
+Suspend Permit
+SendChat("/take drogen " GetClosestPlayerId())
+return
+::/stakeweap::
+Suspend Permit
+SendChat("/take waffen " GetClosestPlayerId())
+return
+::/stakearmor::
+Suspend Permit
+SendChat("/take armour " GetClosestPlayerId())
+return
+::/stakedbg::
+Suspend Permit
+SendChat("/take diebesgut " GetClosestPlayerId())
+return
 /*
 ö::
 AddChatMessage(IsChatOpen())
