@@ -5104,7 +5104,11 @@ SendWPs(crime, wps){
 		Sleep,350
 		GetChatLine(0,chat)
 		if(InStr(chat,"FEHLER: Du bist nicht in der Zentrale"))
+		{
+		if pi is not integer
+		pi := GetPlayerIdByName(pi)
 		SendChat("/d ID " pi " " crime) 
+		}
 }
 SetTimerNow(Label, time){
 	SetTimer, %Label%, %time%
@@ -5531,25 +5535,34 @@ return "VS » Brauche Verstärkung in " GetPlayerZone() ", " GetPlayerCity()". Z
 incoming()
 {
 chat := GetChatLines(10)
-
+motorbike := ["NRG-500","PCJ-600","Faggio","Freeway","Sanchez","BMX","Bike","MountainBike","FCR-900","NRG-500","HPV1000"]
+plane := ["Dodo","Shamal"]
 if(IsPlayerInAnyVehicle()==true)
+{
+typeVeh := "im"
+for i, v in motorbike
+if(InStr(GetVehicleModelName(),motorbike[i]))
+typeVeh := "auf"
+for i, v in plane
+if(InStr(GetVehicleModelName(),plane[i]))
+typeVeh := "in"
 if(getNumberOfPassengers()<1)
 if(InStr(chat,"VS » ") AND IsMarkerCreated())
 return "INC « Aus Richtung " GetPlayerZone() " ("Round(GetDist(GetPlayerCoordinates(),CoordsFromRedmarker()))"m). Mit " GetVehicleModelName()" auf dem Weg"
 else
-return "INC « Aus Richtung " GetPlayerZone() ". Unterwegs mit " GetVehicleModelName()
+return "INC « Aus Richtung " GetPlayerZone() ". Unterwegs " typeVeh " " GetVehicleModelName()
 
 else if(getNumberOfPassengers()==1)
 if(InStr(chat,"VS » ") AND IsMarkerCreated())
-return "INC « Aus Richtung " GetPlayerZone() " ("Round(GetDist(GetPlayerCoordinates(),CoordsFromRedmarker()))"m). Unterwegs mit " GetVehicleModelName() " und " getNumberOfPassengers()" Beifahrer"
+return "INC « Aus Richtung " GetPlayerZone() " ("Round(GetDist(GetPlayerCoordinates(),CoordsFromRedmarker()))"m). Unterwegs " typeVeh " " GetVehicleModelName() ", mit " getNumberOfPassengers()" Beifahrer"
 else
-return "INC « Aus Richtung " GetPlayerZone() ". Unterwegs mit " GetVehicleModelName() " und " getNumberOfPassengers()" Beifahrer"
+return "INC « Aus Richtung " GetPlayerZone() ". Unterwegs " typeVeh " " GetVehicleModelName() ", mit " getNumberOfPassengers()" Beifahrer"
 else
 if(InStr(chat,"VS » ") AND IsMarkerCreated())
-return "INC « Aus Richtung " GetPlayerZone() " ("Round(GetDist(GetPlayerCoordinates(),CoordsFromRedmarker()))"m). Unterwegs mit " GetVehicleModelName() " und " getNumberOfPassengers()" Beifahrern"
+return "INC « Aus Richtung " GetPlayerZone() " ("Round(GetDist(GetPlayerCoordinates(),CoordsFromRedmarker()))"m). Unterwegs " typeVeh " " GetVehicleModelName() ", mit " getNumberOfPassengers()" Beifahrern"
 else
-return "INC « Aus Richtung " GetPlayerZone() ". Unterwegs mit " GetVehicleModelName() " und " getNumberOfPassengers()" Beifahrer"
-
+return "INC « Aus Richtung " GetPlayerZone() ". Unterwegs " typeVeh " " GetVehicleModelName() ", mit " getNumberOfPassengers()" Beifahrern"
+}
 else
 if(InStr(chat,"VS » ") AND IsMarkerCreated())
 return "INC « Aus Richtung " GetPlayerZone() " ("Round(GetDist(GetPlayerCoordinates(),CoordsFromRedmarker()))"m). Zu Fuß"
@@ -7855,7 +7868,7 @@ if(FileExist(INIFile))
 ExitApp
 return
 GuiShow:
-Gui, 1:Show,, sBinder - 0.3DL - v%Version%
+Gui, 1:Show,, sBinder 0.3DL - v%Version%
 return
 
 ::/reconnect::
@@ -10439,10 +10452,172 @@ if(IsFrak(2, 1)){
 		BindReplace("/r » Code 5 - Notruf " (chat1 ? " von " chat1 : "") " angenommen (Ort: " chat2 ") «")
 	}
 }
+::/route bluebs::
+Suspend Permit
+Sleep,500
+SendChat("/route")
+Sleep,250
+while(!IsDialogOpen() AND i < 5)
+{
+Sleep,25
+i++
+}
+if(IsDialogOpen())
+{
+SendInput,{Down}
+SendInput,{Enter}
+Sleep,250
+SendInput,{Down 10}
+SendInput,{Enter}
+}
+return
+::/route bsblue::
+Suspend Permit
+Sleep,500
+SendChat("/route")
+Sleep,250
+while(!IsDialogOpen() AND i < 5)
+{
+Sleep,25
+i++
+}
+if(IsDialogOpen())
+{
+SendInput,{Down}
+SendInput,{Enter}
+Sleep,250
+SendInput,{Down 9}
+SendInput,{Enter}
+}
+return
+::/route lsair::
+Suspend Permit
+Sleep,500
+SendChat("/route")
+Sleep,250
+while(!IsDialogOpen() AND i < 5)
+{
+Sleep,25
+i++
+}
+if(IsDialogOpen())
+{
+SendInput,{Enter}
+Sleep,250
+SendInput,{Down 7}
+SendInput,{Enter}
+}
+return
+::/route lswest::
+Suspend Permit
+Sleep,500
+SendChat("/route")
+Sleep,250
+while(!IsDialogOpen() AND i < 5)
+{
+Sleep,25
+i++
+}
+if(IsDialogOpen())
+{
+SendInput,{Enter}
+Sleep,250
+SendInput,{Down 6}
+SendInput,{Enter}
+}
+return
+::/route sfbs::
+Suspend Permit
+Sleep,500
+SendChat("/route")
+Sleep,250
+while(!IsDialogOpen() AND i < 5)
+{
+Sleep,25
+i++
+}
+if(IsDialogOpen())
+{
+SendInput,{Down}
+SendInput,{Enter}
+Sleep,250
+SendInput,{Down 6}
+SendInput,{Enter}
+}
+return
+::/route bssf::
+Suspend Permit
+Sleep,500
+SendChat("/route")
+Sleep,250
+while(!IsDialogOpen() AND i < 5)
+{
+Sleep,25
+i++
+}
+if(IsDialogOpen())
+{
+SendInput,{Down}
+SendInput,{Enter}
+Sleep,250
+SendInput,{Down 7}
+SendInput,{Enter}
+}
+return
 plus5()
 {
+id := PlayerInput("ID: ")
+SendChat("/checkwanted " id)
+if id is not integer
+id := GetPlayerIdByName(id)
+if(id==-1)
+return
+name := GetPlayerNameById(id)
+if(name=="")
+return
+Sleep, 350
+		GetChatLine(0,chat)
+		if(InStr(chat,name)){
+		while (subStr(chat,i, 12)!="Wantedpunkte")
+		i++
+		i := i - 3
+		if(subStr(chat,i, 2) is integer)
+		punkte := subStr(chat,i, 2)
+		else if(subStr(chat,i+1, 1) is integer OR subStr(chat,i+1, 1)==0)
+		punkte := subStr(chat,i+1, 1)
 
+		if punkte is integer
+		{
+		if(punkte>=15 AND punkte<=30)
+		{
+	
+		punkte := punkte + 5
+		SendChat("/su " id " " punkte " Flucht +5")
+	
+		}
+		else if(punkte<15)
+		SendChat("/su " id " 15 Flucht oder Fluchtversuch")
+		}
+		else
+		AddChatMessage("Fehlgeschlagen")
+		}
+		
 }
+::/+5::
+Suspend Permit
+plus5()
+return
+::/sbounce::
+Suspend Permit
+SendChat("/bounce " GetClosestPlayerId())
+return
+::/scuff::
+Suspend Permit
+SendChat("/cuff " GetClosestPlayerId())
+return
+::/sfrisk::
+Suspend Permit
+SendChat("/frisk " GetClosestPlayerId())
 return
 /*
 ö::
