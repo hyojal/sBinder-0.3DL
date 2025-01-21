@@ -10653,6 +10653,22 @@ return
 Suspend Permit
 SendChat("/take diebesgut " GetClosestPlayerId())
 return
+::/respawn::
+Suspend Permit
+SendChat("/r >>> CAR RESPAWN IN 10 SEKUNDEN <<< ")
+Sleep, 5000
+SendChat("/r >>> 5 <<< ")
+Sleep, 1000
+SendChat("/r >>> 4 <<< ")
+Sleep, 1000
+SendChat("/r >>> 3 <<< ")
+Sleep, 1000
+SendChat("/r >>> 2 <<< ")
+Sleep, 1000
+SendChat("/r >>> 1 <<< ")
+Sleep, 1000
+SendChat("/respawnfv")
+return
 /*
 ö::
 AddChatMessage(IsChatOpen())
