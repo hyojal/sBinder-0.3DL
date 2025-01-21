@@ -5107,6 +5107,7 @@ SendWPs(crime, wps){
 		{
 		if pi is not integer
 		pi := GetPlayerIdByName(pi)
+		if(pi!=-1)
 		SendChat("/d ID " pi " " crime) 
 		}
 }
@@ -10577,7 +10578,7 @@ if(name=="")
 return
 Sleep, 350
 		GetChatLine(0,chat)
-		if(InStr(chat,name)){
+		if(InStr(chat,name) AND (InStr(chat,"Wantedpunkte"))){
 		while (subStr(chat,i, 12)!="Wantedpunkte")
 		i++
 		i := i - 3
