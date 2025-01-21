@@ -6426,7 +6426,7 @@ Gui, CreditsGUI:Font, S10
 Gui, CreditsGUI:Add, Link,, <a href="https://forum.nes-newlife.de/user/1602-muffle/">Muffle</a> (Alter Schriftzug)`nChackN0rris (Viele tolle Ideen)`n<a href="https://forum.nes-newlife.de/user/412-l-ucius/">[L]ucius</a> (Icon, Schriftzug)`n`nAus dem AHK-Forum: <a href="http://www.autohotkey.com/board/user/7194-bentschi/">Bentschi</a>, <a href="http://www.autohotkey.com/board/user/19424-jnizm/">jNizM</a>, <a href="http://www.autohotkey.com/board/user/932-shimanov/">shimanov</a>, <a href="http://www.autohotkey.com/board/user/331-toralf/">toralf</a>, Brainside, <a href="http://www.autohotkey.com/board/user/1-polyethene/">polyethene</a>
 Gui, CreditsGUI:Menu, MenuBar
 ;CustomBindsGUI
-Gui, CustomBindsGUI:Add, Tab2, % "x5 y5 h" (Binds/4)*25+55 " w565 +Theme -Background -Wrap", Hotkeys - Seite 1|Hotkeys - Seite 2|Maustasten|Textbinds
+Gui, CustomBindsGUI:Add, Tab2, % "x5 y5 h" (Binds/4)*25+55 " w565 +Theme -Background -Wrap", Hotkeys - Seite 1|Hotkeys - Seite 2|Maustasten|Textbinds|Killcounter
 loop, 2
 {
 	Gui, CustomBindsGUI:Tab, %A_Index%
@@ -6469,6 +6469,7 @@ Gui, CustomBindsGUI:Add, Text, x140 y30 h20, Aktion
 Gui, CustomBindsGUI:Add, Text, x300 y30 h20, Textbind
 Gui, CustomBindsGUI:Add, Text, x430 y30 h20, Aktion
 Gui, CustomBindsGUI:Font
+
 loop, % Hotstrings
 {
 	num := Round((num2 := A_Index > Hotstrings / 2) ? A_Index - Hotstrings / 2 : A_Index)
@@ -6476,6 +6477,23 @@ loop, % Hotstrings
 	Gui, CustomBindsGUI:Add, Edit, % "x" (num2 ? 430 : 140) " y" num * 25 + 25 " w130 h20 vhBind" A_Index, % hBind%A_Index%
 }
 Gui, CustomBindsGUI:Menu, MenuBar
+
+Gui, CustomBindsGUI:Tab, 5
+Gui, CustomBindsGUI:Font, underline
+Gui, CustomBindsGUI:Add, Text, x10 y30 h20, Aktiv
+Gui, CustomBindsGUI:Add, Text, x140 y30 h20, Killbind Nachricht
+Gui, CustomBindsGUI:Add, Text, x300 y30 h20, Aktiv
+Gui, CustomBindsGUI:Add, Text, x430 y30 h20, Killbind Nachricht
+Gui, CustomBindsGUI:Font
+Gui, CustomBindsGUI:Add, Checkbox, x10 y50, 
+Gui, CustomBindsGUI:Add, Edit, x140 y50 w130 h20 vwKillspruch1, % wKillspruch1
+Gui, CustomBindsGUI:Add, Checkbox, x300 y50,
+Gui, CustomBindsGUI:Add, Edit, x430 y50 w130 h20 vwKillspruch2, % wKillspruch2
+Gui, CustomBindsGUI:Add, Checkbox, x10 y75, 
+Gui, CustomBindsGUI:Add, Edit, x140 y75 w130 h20 vwKillspruch3, % wKillspruch3
+Gui, CustomBindsGUI:Add, Checkbox, x300 y75, 
+Gui, CustomBindsGUI:Add, Edit, x430 y75 w130 h20 vwKillspruch4, % wKillspruch4
+
 ;CarCalcGUI:
 car_name := ["Admiral", "Alpha", "Andromada", "Baggage", "Banshee", "Benson", "BF Injection", "BF-400", "Bike", "Blade", "Blista Compact", "BMX", "Bobcat", "Boxville", "Broadway", "Buccaneer", "Buffalo", "Bullet", "Burrito [Premium]", "Cabbie", "Camper", "Cheetah [Premium]", "Clover", "Club [Premium]", "Comet [Premium]", "DFT-30", "Dinghy", "Dodo", "Elegant", "Elegy", "Esperanto", "Euros", "FCR-900", "Feltzer", "Flash", "Flatbed", "Freeway", "Glendale", "Greenwood", "Hermes", "Hotknife [Premium]", "Hotring Racer Typ A", "Huntley", "Hustler", "Infernus", "Jester", "Jetmax", "Journey", "Landstalker", "Leviathan", "Linerunner", "Majestic", "Marquis", "Maverick", "Mesa", "Moonbeam", "Mountain Bike", "Mule", "Nevada", "NRG-500", "Oceanic", "PCJ-600", "Perenniel", "Phoenix", "Picador", "Pony", "Premier [Premium]", "Quad", "Regina", "Remington", "Roadtrain", "Sabre", "Sanchez", "Savanna", "Sentinel", "Shamal", "Slamvan", "Sparrow", "Stafford", "Stallion", "Stratum", "Stretch", "Stunt", "Sultan", "Sunrise", "Super GT", "Tahoma", "Tanker", "Taxi", "Tornado", "Tractor", "Tropic", "Tug", "Turismo", "Uranus", "Utility", "Virgo", "Voodoo", "Vortex", "Walton", "Washington", "Wayfarer", "Windsor", "Yankee", "Yosemite", "ZR-350"]
 Gui, CarCalcGUI:Add, Text, x10 y10, Fahrzeug:
