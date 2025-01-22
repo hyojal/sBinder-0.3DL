@@ -2778,7 +2778,6 @@ UpdateOScoreboardData() {
         }
         o := Object("NAME", sUsername, "ID", i, "PING", dwPing, "SCORE", dwScore, "ISNPC", dwIsNPC)
         oScoreboardData[i] := o
-
         dwRemoteplayerData := readDWORD(hGTA, dwRemoteplayer + SAMP_REMOTEPLAYERDATA_OFFSET[sampVersion])                ;pPlayerData
         if(ErrorLevelA) {
             ErrorLevelA := ERROR_READ_MEMORY
@@ -4036,7 +4035,380 @@ __unicodeToAnsi(wString, nLen = 0) {
       , "Uint", 0)
     return sString
 }
+/**
+ * Lib: JSON.ahk
+ *     JSON lib for AutoHotkey.
+ * Version:
+ *     v2.1.3 [updated 04/18/2016 (MM/DD/YYYY)]
+ * License:
+ *     WTFPL [http://wtfpl.net/]
+ * Requirements:
+ *     Latest version of AutoHotkey (v1.1+ or v2.0-a+)
+ * Installation:
+ *     Use #Include JSON.ahk or copy into a function library folder and then
+ *     use #Include <JSON>
+ * Links:
+ *     GitHub:     - https://github.com/cocobelgica/AutoHotkey-JSON
+ *     Forum Topic - http://goo.gl/r0zI8t
+ *     Email:      - cocobelgica <at> gmail <dot> com
+ */
 
+
+/**
+ * Class: JSON
+ *     The JSON object contains methods for parsing JSON and converting values
+ *     to JSON. Callable - NO; Instantiable - YES; Subclassable - YES;
+ *     Nestable(via #Include) - NO.
+ * Methods:
+ *     Load() - see relevant documentation before method definition header
+ *     Dump() - see relevant documentation before method definition header
+ */
+class JSON
+{
+	/**
+	 * Method: Load
+	 *     Parses a JSON string into an AHK value
+	 * Syntax:
+	 *     value := JSON.Load( text [, reviver ] )
+	 * Parameter(s):
+	 *     value      [retval] - parsed value
+	 *     text    [in, ByRef] - JSON formatted string
+	 *     reviver   [in, opt] - function object, similar to JavaScript's
+	 *                           JSON.parse() 'reviver' parameter
+	 */
+	class Load extends JSON.Functor
+	{
+		Call(self, ByRef text, reviver:="")
+		{
+			this.rev := IsObject(reviver) ? reviver : false
+		; Object keys(and array indices) are temporarily stored in arrays so that
+		; we can enumerate them in the order they appear in the document/text instead
+		; of alphabetically. Skip if no reviver function is specified.
+			this.keys := this.rev ? {} : false
+
+			static quot := Chr(34), bashq := "\" . quot
+			     , json_value := quot . "{[01234567890-tfn"
+			     , json_value_or_array_closing := quot . "{[]01234567890-tfn"
+			     , object_key_or_object_closing := quot . "}"
+
+			key := ""
+			is_key := false
+			root := {}
+			stack := [root]
+			next := json_value
+			pos := 0
+
+			while ((ch := SubStr(text, ++pos, 1)) != "") {
+				if InStr(" `t`r`n", ch)
+					continue
+				if !InStr(next, ch, 1)
+					this.ParseError(next, text, pos)
+
+				holder := stack[1]
+				is_array := holder.IsArray
+
+				if InStr(",:", ch) {
+					next := (is_key := !is_array && ch == ",") ? quot : json_value
+
+				} else if InStr("}]", ch) {
+					ObjRemoveAt(stack, 1)
+					next := stack[1]==root ? "" : stack[1].IsArray ? ",]" : ",}"
+
+				} else {
+					if InStr("{[", ch) {
+					; Check if Array() is overridden and if its return value has
+					; the 'IsArray' property. If so, Array() will be called normally,
+					; otherwise, use a custom base object for arrays
+						static json_array := Func("Array").IsBuiltIn || ![].IsArray ? {IsArray: true} : 0
+					
+					; sacrifice readability for minor(actually negligible) performance gain
+						(ch == "{")
+							? ( is_key := true
+							  , value := {}
+							  , next := object_key_or_object_closing )
+						; ch == "["
+							: ( value := json_array ? new json_array : []
+							  , next := json_value_or_array_closing )
+						
+						ObjInsertAt(stack, 1, value)
+
+						if (this.keys)
+							this.keys[value] := []
+					
+					} else {
+						if (ch == quot) {
+							i := pos
+							while (i := InStr(text, quot,, i+1)) {
+								value := StrReplace(SubStr(text, pos+1, i-pos-1), "\\", "\u005c")
+
+								static tail := A_AhkVersion<"2" ? 0 : -1
+								if (SubStr(value, tail) != "\")
+									break
+							}
+
+							if (!i)
+								this.ParseError("'", text, pos)
+
+							  value := StrReplace(value,  "\/",  "/")
+							, value := StrReplace(value, bashq, quot)
+							, value := StrReplace(value,  "\b", "`b")
+							, value := StrReplace(value,  "\f", "`f")
+							, value := StrReplace(value,  "\n", "`n")
+							, value := StrReplace(value,  "\r", "`r")
+							, value := StrReplace(value,  "\t", "`t")
+
+							pos := i ; update pos
+							
+							i := 0
+							while (i := InStr(value, "\",, i+1)) {
+								if !(SubStr(value, i+1, 1) == "u")
+									this.ParseError("\", text, pos - StrLen(SubStr(value, i+1)))
+
+								uffff := Abs("0x" . SubStr(value, i+2, 4))
+								if (A_IsUnicode || uffff < 0x100)
+									value := SubStr(value, 1, i-1) . Chr(uffff) . SubStr(value, i+6)
+							}
+
+							if (is_key) {
+								key := value, next := ":"
+								continue
+							}
+						
+						} else {
+							value := SubStr(text, pos, i := RegExMatch(text, "[\]\},\s]|$",, pos)-pos)
+
+							static number := "number", integer :="integer"
+							if value is %number%
+							{
+								if value is %integer%
+									value += 0
+							}
+							else if (value == "true" || value == "false")
+								value := %value% + 0
+							else if (value == "null")
+								value := ""
+							else
+							; we can do more here to pinpoint the actual culprit
+							; but that's just too much extra work.
+								this.ParseError(next, text, pos, i)
+
+							pos += i-1
+						}
+
+						next := holder==root ? "" : is_array ? ",]" : ",}"
+					} ; If InStr("{[", ch) { ... } else
+
+					is_array? key := ObjPush(holder, value) : holder[key] := value
+
+					if (this.keys && this.keys.HasKey(holder))
+						this.keys[holder].Push(key)
+				}
+			
+			} ; while ( ... )
+
+			return this.rev ? this.Walk(root, "") : root[""]
+		}
+
+		ParseError(expect, ByRef text, pos, len:=1)
+		{
+			static quot := Chr(34), qurly := quot . "}"
+			
+			line := StrSplit(SubStr(text, 1, pos), "`n", "`r").Length()
+			col := pos - InStr(text, "`n",, -(StrLen(text)-pos+1))
+			msg := Format("{1}`n`nLine:`t{2}`nCol:`t{3}`nChar:`t{4}"
+			,     (expect == "")     ? "Extra data"
+			    : (expect == "'")    ? "Unterminated string starting at"
+			    : (expect == "\")    ? "Invalid \escape"
+			    : (expect == ":")    ? "Expecting ':' delimiter"
+			    : (expect == quot)   ? "Expecting object key enclosed in double quotes"
+			    : (expect == qurly)  ? "Expecting object key enclosed in double quotes or object closing '}'"
+			    : (expect == ",}")   ? "Expecting ',' delimiter or object closing '}'"
+			    : (expect == ",]")   ? "Expecting ',' delimiter or array closing ']'"
+			    : InStr(expect, "]") ? "Expecting JSON value or array closing ']'"
+			    :                      "Expecting JSON value(string, number, true, false, null, object or array)"
+			, line, col, pos)
+
+			static offset := A_AhkVersion<"2" ? -3 : -4
+			throw Exception(msg, offset, SubStr(text, pos, len))
+		}
+
+		Walk(holder, key)
+		{
+			value := holder[key]
+			if IsObject(value) {
+				for i, k in this.keys[value] {
+					; check if ObjHasKey(value, k) ??
+					v := this.Walk(value, k)
+					if (v != JSON.Undefined)
+						value[k] := v
+					else
+						ObjDelete(value, k)
+				}
+			}
+			
+			return this.rev.Call(holder, key, value)
+		}
+	}
+
+	/**
+	 * Method: Dump
+	 *     Converts an AHK value into a JSON string
+	 * Syntax:
+	 *     str := JSON.Dump( value [, replacer, space ] )
+	 * Parameter(s):
+	 *     str        [retval] - JSON representation of an AHK value
+	 *     value          [in] - any value(object, string, number)
+	 *     replacer  [in, opt] - function object, similar to JavaScript's
+	 *                           JSON.stringify() 'replacer' parameter
+	 *     space     [in, opt] - similar to JavaScript's JSON.stringify()
+	 *                           'space' parameter
+	 */
+	class Dump extends JSON.Functor
+	{
+		Call(self, value, replacer:="", space:="")
+		{
+			this.rep := IsObject(replacer) ? replacer : ""
+
+			this.gap := ""
+			if (space) {
+				static integer := "integer"
+				if space is %integer%
+					Loop, % ((n := Abs(space))>10 ? 10 : n)
+						this.gap .= " "
+				else
+					this.gap := SubStr(space, 1, 10)
+
+				this.indent := "`n"
+			}
+
+			return this.Str({"": value}, "")
+		}
+
+		Str(holder, key)
+		{
+			value := holder[key]
+
+			if (this.rep)
+				value := this.rep.Call(holder, key, ObjHasKey(holder, key) ? value : JSON.Undefined)
+
+			if IsObject(value) {
+			; Check object type, skip serialization for other object types such as
+			; ComObject, Func, BoundFunc, FileObject, RegExMatchObject, Property, etc.
+				static type := A_AhkVersion<"2" ? "" : Func("Type")
+				if (type ? type.Call(value) == "Object" : ObjGetCapacity(value) != "") {
+					if (this.gap) {
+						stepback := this.indent
+						this.indent .= this.gap
+					}
+
+					is_array := value.IsArray
+				; Array() is not overridden, rollback to old method of
+				; identifying array-like objects. Due to the use of a for-loop
+				; sparse arrays such as '[1,,3]' are detected as objects({}). 
+					if (!is_array) {
+						for i in value
+							is_array := i == A_Index
+						until !is_array
+					}
+
+					str := ""
+					if (is_array) {
+						Loop, % value.Length() {
+							if (this.gap)
+								str .= this.indent
+							
+							v := this.Str(value, A_Index)
+							str .= (v != "") ? v . "," : "null,"
+						}
+					} else {
+						colon := this.gap ? ": " : ":"
+						for k in value {
+							v := this.Str(value, k)
+							if (v != "") {
+								if (this.gap)
+									str .= this.indent
+
+								str .= this.Quote(k) . colon . v . ","
+							}
+						}
+					}
+
+					if (str != "") {
+						str := RTrim(str, ",")
+						if (this.gap)
+							str .= stepback
+					}
+
+					if (this.gap)
+						this.indent := stepback
+
+					return is_array ? "[" . str . "]" : "{" . str . "}"
+				}
+			
+			} else ; is_number ? value : "value"
+				return ObjGetCapacity([value], 1)=="" ? value : this.Quote(value)
+		}
+
+		Quote(string)
+		{
+			static quot := Chr(34), bashq := "\" . quot
+
+			if (string != "") {
+				  string := StrReplace(string,  "\",  "\\")
+				; , string := StrReplace(string,  "/",  "\/") ; optional in ECMAScript
+				, string := StrReplace(string, quot, bashq)
+				, string := StrReplace(string, "`b",  "\b")
+				, string := StrReplace(string, "`f",  "\f")
+				, string := StrReplace(string, "`n",  "\n")
+				, string := StrReplace(string, "`r",  "\r")
+				, string := StrReplace(string, "`t",  "\t")
+
+				static rx_escapable := A_AhkVersion<"2" ? "O)[^\x20-\x7e]" : "[^\x20-\x7e]"
+				while RegExMatch(string, rx_escapable, m)
+					string := StrReplace(string, m.Value, Format("\u{1:04x}", Ord(m.Value)))
+			}
+
+			return quot . string . quot
+		}
+	}
+
+	/**
+	 * Property: Undefined
+	 *     Proxy for 'undefined' type
+	 * Syntax:
+	 *     undefined := JSON.Undefined
+	 * Remarks:
+	 *     For use with reviver and replacer functions since AutoHotkey does not
+	 *     have an 'undefined' type. Returning blank("") or 0 won't work since these
+	 *     can't be distnguished from actual JSON values. This leaves us with objects.
+	 *     Replacer() - the caller may return a non-serializable AHK objects such as
+	 *     ComObject, Func, BoundFunc, FileObject, RegExMatchObject, and Property to
+	 *     mimic the behavior of returning 'undefined' in JavaScript but for the sake
+	 *     of code readability and convenience, it's better to do 'return JSON.Undefined'.
+	 *     Internally, the property returns a ComObject with the variant type of VT_EMPTY.
+	 */
+	Undefined[]
+	{
+		get {
+			static empty := {}, vt_empty := ComObject(0, &empty, 1)
+			return vt_empty
+		}
+	}
+
+	class Functor
+	{
+		__Call(method, ByRef arg, args*)
+		{
+		; When casting to Call(), use a new instance of the "function object"
+		; so as to avoid directly storing the properties(used across sub-methods)
+		; into the "function object" itself.
+			if IsObject(method)
+				return (new this).Call(method, arg, args*)
+			else if (method == "")
+				return (new this).Call(arg, args*)
+		}
+	}
+}
 ;++++++++++++++++++++++++++++++++++++++++++++++++++ sBinder-Start ++++++++++++++++++++++++++++++++++++++++++++++++++
 
 /*
@@ -4093,7 +4465,7 @@ if(LastUsedBuild = 0){
 		{
 			FileSelectFolder, newfolder,, 3, Wähle den neuen Ordner des sBinders:
 			if(!ErrorLevel){
-				FileCreateShortcut, %A_ScriptName%, sBinder.lnk, %newfolder%, sBinder by IcedWave
+				FileCreateShortcut, %A_ScriptName%, sBinder.lnk, %newfolder%, sBinder 0.3DL
 				FileDelete, sBinder_move.bat
 				FileAppend, @echo off`nping 1.1.1.1 -n 1 -w 800`nmove "%A_ScriptFullPath%" "%newfolder%\%A_ScriptName%"`nping 1.1.1.1 -n 1 -w 800`nstart "" "%newfolder%\%A_ScriptName%"`ndel "%A_ScriptDir%\sBinder_move.bat", sBinder_move.bat
 				Run, %RunPrivileges%sBinder_move.bat
@@ -4120,36 +4492,7 @@ if(!FileExist(A_AppData "\sBinder\bg.png")){
 	;Progress, Off
 	InfoProgress()
 }
-if(UseAPI AND !FileExist(A_AppData "\sBinder\Open-SAMP-API.dll")){
-	MsgBox, 36, Open-SAMP-API.dll herunterladen?, Die Open-SAMP-API.dll wurde nicht gefunden. Dies kann folgende Gründe haben:`n• Erster Start des sBinders`n• Löschen des AppData-Ordners`n• Aktivierung der API-Nutzung in den Einstellungen`n`nMit einem Klick auf Ja wird die Open-SAMP-API.dll heruntergeladen, wenn du auf Nein klickst, wird die API nicht genutzt. Du kannst die Nutzung der API jederzeit in den Optionen aktivieren oder deaktivieren.`n`n`nWas bringt mir die API?`nMit der API werden die zahlreichen Informationen, die der sBinder dir bietet, wirklich nur dir angezeigt. Außerdem wird der Spielablauf weniger blockiert und die Eingabe in Dialoge (wie auch die Passworteingabe) nicht gestört.
-	IfMsgBox, No
-	{
-		UseAPI := 0
-		IniWrite, 0, %INIFile%, Settings, UseAPI
-	}
-	IfMsgBox, Yes
-	{
-		MsgBox, 36, Virustotal?, Willst du die Virustotal-Analyse der Open-SAMP-API.dll ansehen?
-		IfMsgBox, Yes
-		{
-			Run, http://saplayer.lima-city.de/l/virustotal-API
-			Sleep, 2000
-			MsgBox, 36, Download fortsetzen?, Willst du die Open-SAMP-API.dll wirklich herunterladen?
-			IfMsgBox, No
-			{
-				UseAPI := 0
-				IniWrite, 0, %INIFile%, Settings, UseAPI
-			}
-		}
-		if(UseAPI){
-			;Progress, A B1 M T CB000000 CWFFFFFF, Bitte habe etwas Geduld..., API.dll wird heruntergeladen..., sBinder Download
-			InfoProgress("Bitte habe etwas Geduld...", "Open-SAMP-API.dll wird heruntergeladen...", "sBinder Download")
-			URLDownloadToFile, http://saplayer.lima-city.de/l/API, %A_AppData%\sBinder\Open-SAMP-API.dll
-			;Progress, Off
-			InfoProgress()
-		}
-	}
-}
+
 /* Download der API 1.0
 if(UseAPI){
 	FileGetSize, api_size, % A_AppData "\sBinder\API.dll"
@@ -4160,6 +4503,31 @@ if(UseAPI){
 	}
 }
 */
+
+
+IniWrite, % 1, %INIFile%, Settings, UseAPI
+data := HTTPData("https://api.github.com/repos/hyojal/sBinder-0.3DL/tags")
+global gitVersion := subStr(data,11,3)
+global soundsEnabled
+
+if(InStr(data,"API rate limit exceeded") OR !InStr(data,"."))
+gitVersion := 0 
+IniRead, enabled, %INIFile%, Settings, EnableSounds
+if((enable==0) OR (enable=="ERROR"))
+soundsEnabled := 0
+else
+soundsEnabled := 1
+IfNotExist, sounds
+FileCreateDir , sounds
+
+if(!FileExist("sounds\damageinc.mp3"))
+URLDownloadToFile, https://www.myinstants.com/media/sounds/roblox-oof-no-delay.mp3, sounds\damageinc.mp3
+if(!FileExist("sounds\kill.mp3"))
+URLDownloadToFile, https://www.myinstants.com/media/sounds/correct-cash-register.mp3, sounds\kill.mp3
+if(!FileExist("sounds\wasted.mp3"))
+URLDownloadToFile, https://www.myinstants.com/media/sounds/wasted_2.mp3, sounds\wasted.mp3
+if(!FileExist("sounds\fishing.mp3"))
+URLDownloadToFile, https://www.myinstants.com/media/sounds/swoosh-sound-effects.mp3, sounds\fishing.mp3
 
 
 AddChatMessage(Text, color=0xFF6600, nosplit=0, indent=0){
@@ -4784,7 +5152,7 @@ number_format(num){
 }
 OverlayReplace(text, InVehicle){
 	static called, GetPlayerHealth_func, GetPlayerArmor_func, GetPlayerId_func, GetPlayerMoney_func, GetZoneName_func, GetCityName_func, GetVehicleHealth_func, GetFramerate_func, GetVehicleSpeed_func, GetVehicleModelId_func, GetVehicleModelName_func, IsVehicleLocked_func, IsVehicleEngineEnabled_func, IsVehicleLightEnabled_func, old_id
-	global UseAPI, Nickname, hModule, LastUseLsd, NextUseGreenDonutGold
+	global UseAPI, Nickname, hModule, LastUseLsd, NextUseGreenDonutGold, lastPlayerHealth, lastPlayerArmor
 	if(!UseAPI)
 		return
 	if(!called){
@@ -5101,12 +5469,12 @@ SendWPs(crime, wps){
 		SendChat("./" data2 " ID " data3 " | " wps " WPs | " crime " | bitte best." ia)
 	else
 		SendChat("/su " data3 " " wps " " crime ia)
-		Sleep,350
-		GetChatLine(0,chat)
+		chat := WaitForChatLine(0,"FEHLER: Du bist nicht in der Zentrale")
 		if(InStr(chat,"FEHLER: Du bist nicht in der Zentrale"))
 		{
 		if pi is not integer
 		pi := GetPlayerIdByName(pi)
+		if(pi!=-1)
 		SendChat("/d ID " pi " " crime) 
 		}
 }
@@ -5523,15 +5891,6 @@ getNumberOfPassengers()
     }
     return r
 }
-verstaerkung()
-{
-if(isPlayerInAnyVehicle())
-{
-return "VS » Brauche Verstärkung in " GetPlayerZone() ", " GetPlayerCity()". Im Fahrzeug " GetVehicleModelName() " mit " Round(GetVehicleSpeed()) "km/h" 
-}
-else
-return "VS » Brauche Verstärkung in " GetPlayerZone() ", " GetPlayerCity()". Zu Fuß unterwegs"
-}
 incoming()
 {
 chat := GetChatLines(10)
@@ -5601,7 +5960,7 @@ if(AFKBox)
 if(InStr(FullArgs, "--just-updated")){
 	Gui, TempGUI2:Destroy
 	Gui, TempGUI2:Color, FFFFFF, 282828
-	Gui, TempGUI2:Add, Text,, Das Update wurde erfolgreich abgeschlossen.`nDu kannst den sBinder jetzt in der Version %Version%-%Build% nutzen.
+	Gui, TempGUI2:Add, Text,, Das Update wurde erfolgreich abgeschlossen.`nDu kannst den sBinder jetzt in der Version %Version% nutzen.
 	Gui, TempGUI2:Add, Button, gChangelogOnline y50 x10 w120, Changelog anzeigen
 	Gui, TempGUI2:Add, Button, gTempGUI2GuiClose y50 x220 w80, Schließen
 	Gui, TempGUI2:Show, % (WinActive("ahk_group GTASA") ? "NA" : ""), Update abgeschlossen
@@ -5620,7 +5979,7 @@ gosub FrakChangeGuiBuild
 gosub HotkeysDefine
 gosub Downloads
 if(OverlayActive AND UseAPI)
-	SetTimerNow("Overlay", 500)
+	SetTimerNow("Overlay", 100)
 Sleep, 20
 if(Startup_Fraps)
 	SetTimer, RunFraps, % Abs(Startup_Fraps_Delay) * -1000
@@ -5850,7 +6209,7 @@ loop, %MaxOverlays%
 }
 return
 Downloads:
-inetconn := UpdateAvailable := 0
+
 errortext := ""
 if(UseAPI AND !FileExist(A_WinDir "\System32\D3DX9_43.dll"))
 	errortext .= "<li>Die d3dx9_43.dll konnte auf dem Computer nicht gefunden werden. Sie gehört zu DirectX und wird von der API benötigt. <a href='http://www.microsoft.com/de-de/download/details.aspx?id=35'>DirectX-Installer herunterladen</a></li>"
@@ -5876,70 +6235,16 @@ if(!SkipPing){
 }
 if(pingsuccessful || FileExist(datacachefile)){
 	SB_SetTextEx("Daten werden heruntergeladen...")
-	
-	if(pingsuccessful)
-		data := LTrim(HTTPData("http://saplayer.lima-city.de/sBinder/logon.php?nl&u=" URLEncode(Nickname) "&v=" URLEncode(Version "-" Build (InStr(A_ScriptName, ".ahk") ? "-dev" : (A_ScriptName = "sBinder_Beta.exe" ? "-beta" : ""))), "Die Daten konnten nicht heruntergeladen werden", "UTF-8"), " ?")
-	else
-		data := ""
-	if(vBuild := RegExFileRead(data, "B", 0)){
-		inetconn := 1
-	}
-	vVersion := RegExFileRead(data, "V")
-	vSize := RegExFileRead(data, "S", 100) * 1000
-	Info_ := RegExFileRead(data, "I2", "Die Informationen konnten nicht abgerufen werden :(`n`nFehler: " data)
-	StringReplace, Info_, Info_, ``n, `n, All
-	StringReplace, Info_, Info_, ``t, `t, All
-	Info := Object()
-	;;;
-	DYK_ := RegExFileRead(data, "DYK", " ")
-	StringReplace, DYK_, DYK_, ``n, `n, All
-	StringReplace, DYK_, DYK_, ``t, `t, All
-	DYK := Object()
-	;;;
-	if(errortext)
-		Info_ := "<span style='color:#F10'>Es sind Fehler aufgetreten!</span><br><ul>" errortext "</ul><br><b>Hinweis:</b> <div class='hint'>Diese Seite aktualisiert sich nicht automatisch. <a href='sBinder://g/Downloads'>Jetzt aktualisieren</a></div>§" Info_
-	;;;
-	loop, Parse, DYK_, §
-	{
-		data := A_LoopField
-		if(InStr(data, "Build ") AND RegExMatch(data, "U)^\[\[(Min|Max|Only)Build ([\d.]+)\]\]", chat)){ ;Erkennung von [[MinBuild X]], [[MaxBuild X]] und [[OnlyBuild X]]
-			if((chat1 = "Min" AND Build < chat2) OR (chat1 = "Max" AND Build > chat2) OR (chat1 = "Only" AND Build != chat2))
-				continue
-			data := RegExReplace(data, "U)^\[\[(Min|Max|Only)Build (\d+)\]\]")
-		}
-		DYK.Insert(data)
-	}
-	if(DYK._maxIndex()){
-		Random, DYK_, 1, % DYK._maxIndex()
-		DYK := DYK[DYK_]
-		if(DYK)
-			DYK := "<div class=""dyk""><div class=""dyk-header"">Schon gewusst, ...</div>" DYK "</div>"
-	}
-	DYK_ := ""
-	;;;
-	loop, Parse, Info_, §
-	{
-		data := A_LoopField
-		if(InStr(data, "Build ") AND RegExMatch(data, "U)^\[\[(Min|Max|Only)Build (\d+)\]\]", chat)){ ;Erkennung von [[MinBuild X]], [[MaxBuild X]] und [[OnlyBuild X]]
-			if((chat1 = "Min" AND Build < chat2) OR (chat1 = "Max" AND Build > chat2) OR (chat1 = "Only" AND Build != chat2))
-				continue
-			data := RegExReplace(data, "U)^\[\[(Min|Max|Only)Build (\d+)\]\]")
-		}
-		if(data = "[[DYK]]")
-			data := DYK
-		Info.Insert(data)
-	}
-	Info_ := ""
-	;StringSplit, Info, Info, §
-	;GuiControl, 1:, Info, %Info1%
-	SetWB(Inf, Info[1],, InfoColor)
+
+
+
 	if(Info._maxIndex() > 1)
 		GuiControl, 1:Enable, NextInfo
 	GuiControl, 1:Disable, LastInfo
 	cInfo := 1
-	if(Build < vBuild){
+	if((Version < gitVersion)){
 		UpdateAvailable := 1
-		SB_SetTextEx("Version " vVersion "-" vBuild " verfügbar. Ein Update kannst du über Datei->Update ausführen.")
+		SB_SetTextEx("Version " gitVersion " verfügbar. Ein Update kannst du über Datei->Update ausführen.")
 		if(!reloaded AND !WinActive("ahk_group GTASA"))
 			gosub UpdateGUI
 	}
@@ -5947,16 +6252,7 @@ if(pingsuccessful || FileExist(datacachefile)){
 		SB_SetTextEx("Keine neue Version gefunden")
 	data := ""
 }
-if(!inetconn){
-	errortext := "<li>Die Informationen konnten nicht heruntergeladen werden :(<br><a href='sBinder://g/Downloads'>Versuche es in ein paar Minuten erneut</a><br>Fehler: <b><span style='color:#F10'>" clearping(ping) "</span></b></li>" errortext
-	SetWB(Inf, "<span style='color:#F10'>Es sind Fehler aufgetreten!</span><br><ul>" errortext "</ul><br><b>Hinweis:</b> <div class='hint'>Diese Seite aktualisiert sich nicht automatisch. <a href='sBinder://g/Downloads'>Jetzt aktualisieren</a></div>",, InfoColor)
-	GuiControl, 1:Disable, LastInfo
-	GuiControl, 1:Disable, NextInfo
-	SB_SetTextEx("Überprüfung auf neue Version fehlgeschlagen. Es werden gecachte Daten genutzt.")
-}
-if(!vBuild){
-	SB_SetTextEx("Überprüfung auf neue Version fehlgeschlagen, Fraktionsbinds können nicht verwendet werden! Grund: " clearping(ping))
-}
+
 return
 VT:
 Run, "http://saplayer.lima-city.de/l/virustotal-sBinder"
@@ -5964,8 +6260,7 @@ return
 UpdateGUI:
 Gui, TempGUI:Destroy
 Gui, TempGUI:Color, FFFFFF, 282828
-Gui, TempGUI:Add, Text, w290, % (UpdateAvailable ? "Die neue Version " vVersion "-" vBuild " ist zum Download verfügbar.`nWillst du jetzt ein Update ausführen?" : "Es ist kein Update verfügbar, die aktuellste Version ist " vVersion "-" vBuild ". Du kannst trotzdem ein manuelles Update ausführen.")
-Gui, TempGUI:Add, Button, x160 y40 w120 gVT, Virustotal-Link öffnen
+Gui, TempGUI:Add, Text, w290, % (UpdateAvailable ? "Die neue Version " gitVersion " ist zum Download verfügbar.`nWillst du jetzt ein Update ausführen?" : "Es ist kein Update verfügbar, die aktuellste Version ist " vVersion "-" vBuild ". Du kannst trotzdem ein manuelles Update ausführen.")
 Gui, TempGUI:Add, Button, x200 y65 w80 gChangelogOnline, Changelog
 Gui, TempGUI:Add, CheckBox, % "x10 y90 vDoUpdate" + (UpdateAvailable ? " Checked" : ""), % "Update durchführen" + (UpdateAvailable ? " (empfohlen)" : "")
 Gui, TempGUI:Add, Button, x220 w60 y90 gUpdate Default, Weiter »»
@@ -5990,34 +6285,25 @@ savemsg := 1
 GuiControlGet, SB_old, 1:, SB
 SB_SetTextEx("Das Update wird vorbereitet...")
 GuiControl, TempGUI:, Status, Das Update wird vorbereitet...
-URLDownloadToFile, http://saplayer.lima-city.de/l/sBinder-update, sBinder_new.exe
+
+
 SB_SetTextEx("Update wird durchgeführt...")
 GuiControl, TempGUI:, Status, Update wird durchgeführt...
 FileGetSize, size_curr, sBinder_new.exe
-if(size_curr >= vSize){
-	FileDelete, sUpdate.bat
-	FileAppend, % "@echo off`nping 1.1.1.1 -n 1 -w 800`ndel """ A_ScriptDir "\sBinder.exe""`nmove """ A_ScriptDir "\sBinder_new.exe"" """ A_ScriptDir "\sBinder.exe""`nping 1.1.1.1 -n 1 -w 800`nstart """" """ A_ScriptDir "\sBinder.exe"" ""--just-updated""`ndel """ A_ScriptDir "\sUpdate.bat""", sUpdate.bat
-	Run, %RunPrivileges%sUpdate.bat,, Hide
+url := "https://github.com/hyojal/sBinder-0.3DL/releases/download/" gitVersion "/sBinder.exe"
+URLDownloadToFile, % url , sBinder_new.exe
+	FileDelete, update.bat
+	FileAppend, % "timeout 1`ndel sBinder.exe `nrename sBinder_new.exe sBinder.exe`ndel update.bat", update.bat
+	Run, update.bat,,hide
 	ExitApp
-}
-else{
-	FileDelete, sBinder_new.exe
-	MsgBox, 21, Updatefehler, % "Update auf Version " vVersion "-" vBuild " war nicht erfolgreich!`n" number_format(size_curr) "/" number_format(vSize)
-	IfMsgBox, Cancel
-	{
-		SB_SetTextEx(SB_Old)
-		GuiControl, TempGUI:, Status
-	}
-	IfMsgBox, Retry
-		goto Update
-	return
-}
+
+
 return
 TempGUI2GuiClose:
 Gui, TempGUI2:Destroy
 return
 Variables:
-Version := "2.2"
+Version := "2.3"
 Build := 84
 active := 1
 ;INIFile := A_ScriptDir "\keybinder.ini"
@@ -6240,7 +6526,7 @@ else
 if(A_IsCompiled)
 	Menu, Tray, NoStandard
 Menu, Tray, Color, FFFFFF
-Menu, Tray, Tip, sBinder %Version%-%Build% by IcedWave
+Menu, Tray, Tip, sBinder 0.3DL v%Version%
 Menu, Tray, Add, &Öffnen, GuiShow
 Menu, Tray, Add, B&eenden, 1GuiClose
 Menu, Tray, Default, &Öffnen
@@ -6282,7 +6568,7 @@ return
 BuildGUIs:
 ;AboutGUI
 Gui, AboutGUI:Add, Picture, x0 y5, %A_AppData%\sBinder\bg.png
-Gui, AboutGUI:Add, Link, x10, % "Version: " Version " (Build " Build ")`n`nEntwickler: IcedWave`nCopyright © 2012-2015 IcedWave`n`nProgrammiert mit <a href=""http://autohotkey.com"">Autohotkey</a> Version " A_AhkVersion
+Gui, AboutGUI:Add, Link, x10, % "Version: " Version "`n`nEhemaliger Entwickler: IcedWave`nModifiziert von Nova Community`nCopyright © 2012-2015 IcedWave`n`nProgrammiert mit <a href=""http://autohotkey.com"">Autohotkey</a> Version " A_AhkVersion
 Gui, AboutGUI:Menu, MenuBar
 ;SettingsGUI
 Gui, SettingsGUI:Add, Tab2, -Background +Theme -Wrap x5 y5 w525 h340 vSettingsTab, Seite 1|Seite 2|Erweiterte Optionen
@@ -6415,7 +6701,7 @@ Gui, SettingsGUI:Add, Button, x15 y%y% h20 gUpdateDesign, Aktuelles Design manue
 Gui, SettingsGUI:Add, Button, x505 y%y% h20 w12 gHelp30, ?
 y += 30
 Gui, SettingsGUI:Tab
-Gui, SettingsGUI:Add, Text, x5, sBinder %Version%-%Build% by IcedWave
+Gui, SettingsGUI:Add, Text, x5, sBinder 0.3DL v%Version%
 Gui, SettingsGUI:Add, ListBox, x535 y25 w150 h320 gSettingsChangeTab vSettingsListBox AltSubmit Choose1 0x100, Allgemeine Einstellungen|Ingame-Einstellungen|   Telefontexte|Pfade|/trucking|Programme mitstarten|Erweiterte Optionen
 Gui, SettingsGUI:Menu, MenuBar
 ;CreditsGUI
@@ -7195,12 +7481,11 @@ TextbindsBrowser:
 Run, http://saplayer.lima-city.de/l/sBinder-textbinds
 return
 ChangelogOnline:
-Changelog.Silent := 1
-Changelog.Navigate("http://saplayer.lima-city.de/l/sBinder-changelog&a=nobugs")
-Gui, Changelog:Show,, sBinder: Changelog
+Run, https://github.com/hyojal/sBinder-0.3DL/releases/tag/%gitVersion%
+
 return
 ChangelogBrowser:
-Run, http://saplayer.lima-city.de/l/sBinder-changelog&a=nobugs
+Run, https://github.com/hyojal/sBinder-0.3DL/releases/tag/%gitVersion%
 return
 ForumThread:
 Run, https://forum.nes-newlife.de/thread/1544-sbinder-by-icedwave/
@@ -7728,49 +8013,53 @@ if(!WinActive("ahk_group GTASA") OR WinActive("ahk_class AutoHotkeyGUI")){
 		Ov := [-1, -1, -1]
 	return
 }
-InVehicle := IsPlayerInAnyVehicle()
-OverlayShown := !(IsDialogOpen()) AND active
-loop, %MaxOverlays%
-{
-	if(OvText%A_Index% = ""){
-		if(Ov[A_Index] > -1){
-			TextDestroy(Ov[A_Index])
-			Ov[A_Index] := -1
-		}
-		continue
-	}
-	if(Ov[A_Index] < 0){
-		if(!OvOnlyInVeh%A_Index% OR InVehicle){
-			RegExMatch(OvFontStyle%A_Index%, "O)s(\d+)\b", OvRegEx)
-			Ov[A_Index] := TextCreate(OvFont%A_Index%, (OvRegEx.Value(1) ? OvRegEx.Value(1) : 11), !!InStr(OvFontStyle%A_Index%, "bold"), !!InStr(OvFontStyle%A_Index%, "italic"), OvPosX%A_Index%, OvPosY%A_Index%, OvColor%A_Index% + 0xFF000000, "", OvShadow%A_Index%, 1)
-			if(!A_IsCompiled AND Ov[A_Index] != "")
-				AddChatMessage("Overlay " A_Index " wurde geladen. (" Ov[A_Index] ")")
-		}
-	}
-	else if(OvOnlyInVeh%A_Index% AND !InVehicle){
-		TextDestroy(Ov[A_Index])
-		Ov[A_Index] := -1
-	}
-	if(Ov[A_Index] != "" AND Ov[A_Index] > -1){
-		TextSetString(Ov[A_Index], OverlayReplace(OvText%A_Index%, InVehicle))
-		TextSetShown(Ov[A_Index], OverlayShown)
-		
-		if(OvNeedsUpdate%A_Index%){
-			OvNeedsUpdate%A_Index% := 0
-			TextSetPos(Ov[A_Index], OvPosX%A_Index%, OvPosY%A_Index%)
-			TextSetColor(Ov[A_Index], OvColor%A_Index% + 0xFF000000)
-			TextSetShadow(Ov[A_Index], OvShadow%A_Index%)
-			RegExMatch(OvFontStyle%A_Index%, "O)s(\d+)\b", OvRegEx)
-			TextUpdate(Ov[A_Index], OvFont%A_Index%, (OvRegEx.Value(1) ? OvRegEx.Value(1) : 11), !!InStr(OvFontStyle%A_Index%, "bold"), !!InStr(OvFontStyle%A_Index%, "italic"))
-		}
-	}
-}
+
 GetChatLine(0, chat)
 if(InStr(chat,"SERVER: Du hast gerade einen Mord begangen. Achtung!") AND !InStr(chat, "sagt") AND !InStr(chat, ")") AND !InStr(chat, "*") AND !InStr(chat, "schreit") AND !InStr(chat, "flüstert")){
 IniRead, message, %INIFile%, Settings, Killbinder
 if((message!="") AND (message!="ERROR"))
 {
 BindReplace(message)
+if(soundsEnabled)
+{
+SoundGet originalVolume
+SoundSet 30
+SoundPlay, sounds\kill.mp3
+Sleep 400
+SoundSet originalVolume
+}
+}
+}
+if(soundsEnabled)
+{
+if(InStr(chat,"Dein Fang scheint sich") AND !InStr(chat, "sagt") AND !InStr(chat, ")") AND !InStr(chat, "*") AND !InStr(chat, "schreit") AND !InStr(chat, "flüstert"))
+{
+AddChatMessage("Fisch wehrt sich")
+SoundGet originalVolume
+SoundSet 30
+SoundPlay, sounds\fishing.mp3
+Sleep 400
+SoundSet originalVolume
+}
+if((GetPlayerHealth() < lastPlayerHealth-10) OR (GetPlayerArmor() < lastPlayerArmor-10))
+{
+SoundGet originalVolume
+SoundSet 30
+SoundPlay, sounds\damageinc.mp3
+Sleep 400
+SoundSet originalVolume
+}
+lastPlayerArmor := GetPlayerArmor()
+lastPlayerHealth := GetPlayerHealth()
+if(InStr(chat,"NOTRUF: Da dein NovaHealth") AND !InStr(chat, "sagt") AND !InStr(chat, ")") AND !InStr(chat, "*") AND !InStr(chat, "schreit") AND !InStr(chat, "flüstert"))
+{
+
+SoundGet originalVolume
+SoundSet 30
+SoundPlay, sounds\wasted.mp3
+Sleep 400
+SoundSet originalVolume
+WaitForChatLine(0,"Du bist nun auf dem Friedhof",10,100,0)
 }
 }
 return
@@ -8313,7 +8602,7 @@ return
 #if (IsFrak(2) OR IsFrak(3) OR IsFrak(11)) AND WinActive("ahk_group GTASA") AND UseAPI
 ::/vs::
 Suspend Permit
-SendChat("/d " verstaerkung())
+SendChat("/callvs")
 return
 #if (IsFrak(2) OR IsFrak(3) OR IsFrak(11)) AND WinActive("ahk_group GTASA") AND UseAPI
 ::/inc::
@@ -9565,6 +9854,10 @@ return
 Suspend Permit
 SendWPs("Staatsgefährdung", 61)
 return
+::/schiessen::
+Suspend Permit
+SendWPs("Schießen in der Öffentlichkeit", 10)
+return
 ::/schießen::
 Suspend Permit
 SendWPs("Schießen in der Öffentlichkeit", 10)
@@ -9617,7 +9910,7 @@ return
 ;Ende der WPs
 ::/swapgun shotgun::
 Suspend Permit
-Sleep,150
+Sleep,500
 SendChat("/swapgun")
 Sleep,100
 while(!IsDialogOpen() AND i < 5)
@@ -9635,7 +9928,7 @@ Suspend Permit
 Sleep,500
 SendChat("/swapgun")
 Sleep,100
-while(!IsDialogOpen() AND i < 5)
+while(!IsDialogOpen() AND i < 10)
 {
 Sleep,25
 i++
@@ -9645,6 +9938,7 @@ if(IsDialogOpen())
 SendInput,{Down}
 SendInput,{Enter}
 }
+
 return
 ::/swapgun m4::
 Suspend Permit
@@ -10575,8 +10869,8 @@ return
 name := GetPlayerNameById(id)
 if(name=="")
 return
-Sleep, 350
-		GetChatLine(0,chat)
+
+		chat := WaitForChatLine(0,"Wantedpunkte")
 		if(InStr(chat,name)){
 		while (subStr(chat,i, 12)!="Wantedpunkte")
 		i++
@@ -10592,7 +10886,7 @@ Sleep, 350
 		{
 	
 		punkte := punkte + 5
-		SendChat("/su " id " " punkte " Flucht +5")
+		SendChat("/su " id " " punkte " +5 Flucht")
 	
 		}
 		else if(punkte<15)
@@ -10618,6 +10912,58 @@ return
 ::/sfrisk::
 Suspend Permit
 SendChat("/frisk " GetClosestPlayerId())
+return
+::/acceptsduty::
+Suspend Permit
+SendChat("/accept sduty " GetClosestPlayerId())
+return
+::/seffects::
+Suspend Permit
+IniRead, isEnabled, %INIFile%, Settings, EnableSounds
+if((isEnabled==0) OR (isEnabled=="ERROR"))
+{
+IniWrite, % 1, %INIFile%, Settings, EnableSounds
+soundsEnabled := 1
+AddChatMessage("sBinder Sounds aktiviert.")
+}
+else
+{
+IniWrite, % 0, %INIFile%, Settings, EnableSounds
+soundsEnabled := 0
+AddChatMessage("sBinder Sounds deaktiviert.")
+}
+return
+::/stakedrogen::
+Suspend Permit
+SendChat("/take drogen " GetClosestPlayerId())
+return
+::/stakeweap::
+Suspend Permit
+SendChat("/take waffen " GetClosestPlayerId())
+return
+::/stakearmor::
+Suspend Permit
+SendChat("/take armour " GetClosestPlayerId())
+return
+::/stakedbg::
+Suspend Permit
+SendChat("/take diebesgut " GetClosestPlayerId())
+return
+::/respawn::
+Suspend Permit
+SendChat("/r >>> CAR RESPAWN IN 10 SEKUNDEN <<< ")
+Sleep, 5000
+SendChat("/r >>> 5 <<< ")
+Sleep, 1000
+SendChat("/r >>> 4 <<< ")
+Sleep, 1000
+SendChat("/r >>> 3 <<< ")
+Sleep, 1000
+SendChat("/r >>> 2 <<< ")
+Sleep, 1000
+SendChat("/r >>> 1 <<< ")
+Sleep, 1000
+SendChat("/respawnfv")
 return
 /*
 ö::
