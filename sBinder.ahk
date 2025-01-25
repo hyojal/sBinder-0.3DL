@@ -4035,380 +4035,7 @@ __unicodeToAnsi(wString, nLen = 0) {
       , "Uint", 0)
     return sString
 }
-/**
- * Lib: JSON.ahk
- *     JSON lib for AutoHotkey.
- * Version:
- *     v2.1.3 [updated 04/18/2016 (MM/DD/YYYY)]
- * License:
- *     WTFPL [http://wtfpl.net/]
- * Requirements:
- *     Latest version of AutoHotkey (v1.1+ or v2.0-a+)
- * Installation:
- *     Use #Include JSON.ahk or copy into a function library folder and then
- *     use #Include <JSON>
- * Links:
- *     GitHub:     - https://github.com/cocobelgica/AutoHotkey-JSON
- *     Forum Topic - http://goo.gl/r0zI8t
- *     Email:      - cocobelgica <at> gmail <dot> com
- */
 
-
-/**
- * Class: JSON
- *     The JSON object contains methods for parsing JSON and converting values
- *     to JSON. Callable - NO; Instantiable - YES; Subclassable - YES;
- *     Nestable(via #Include) - NO.
- * Methods:
- *     Load() - see relevant documentation before method definition header
- *     Dump() - see relevant documentation before method definition header
- */
-class JSON
-{
-	/**
-	 * Method: Load
-	 *     Parses a JSON string into an AHK value
-	 * Syntax:
-	 *     value := JSON.Load( text [, reviver ] )
-	 * Parameter(s):
-	 *     value      [retval] - parsed value
-	 *     text    [in, ByRef] - JSON formatted string
-	 *     reviver   [in, opt] - function object, similar to JavaScript's
-	 *                           JSON.parse() 'reviver' parameter
-	 */
-	class Load extends JSON.Functor
-	{
-		Call(self, ByRef text, reviver:="")
-		{
-			this.rev := IsObject(reviver) ? reviver : false
-		; Object keys(and array indices) are temporarily stored in arrays so that
-		; we can enumerate them in the order they appear in the document/text instead
-		; of alphabetically. Skip if no reviver function is specified.
-			this.keys := this.rev ? {} : false
-
-			static quot := Chr(34), bashq := "\" . quot
-			     , json_value := quot . "{[01234567890-tfn"
-			     , json_value_or_array_closing := quot . "{[]01234567890-tfn"
-			     , object_key_or_object_closing := quot . "}"
-
-			key := ""
-			is_key := false
-			root := {}
-			stack := [root]
-			next := json_value
-			pos := 0
-
-			while ((ch := SubStr(text, ++pos, 1)) != "") {
-				if InStr(" `t`r`n", ch)
-					continue
-				if !InStr(next, ch, 1)
-					this.ParseError(next, text, pos)
-
-				holder := stack[1]
-				is_array := holder.IsArray
-
-				if InStr(",:", ch) {
-					next := (is_key := !is_array && ch == ",") ? quot : json_value
-
-				} else if InStr("}]", ch) {
-					ObjRemoveAt(stack, 1)
-					next := stack[1]==root ? "" : stack[1].IsArray ? ",]" : ",}"
-
-				} else {
-					if InStr("{[", ch) {
-					; Check if Array() is overridden and if its return value has
-					; the 'IsArray' property. If so, Array() will be called normally,
-					; otherwise, use a custom base object for arrays
-						static json_array := Func("Array").IsBuiltIn || ![].IsArray ? {IsArray: true} : 0
-					
-					; sacrifice readability for minor(actually negligible) performance gain
-						(ch == "{")
-							? ( is_key := true
-							  , value := {}
-							  , next := object_key_or_object_closing )
-						; ch == "["
-							: ( value := json_array ? new json_array : []
-							  , next := json_value_or_array_closing )
-						
-						ObjInsertAt(stack, 1, value)
-
-						if (this.keys)
-							this.keys[value] := []
-					
-					} else {
-						if (ch == quot) {
-							i := pos
-							while (i := InStr(text, quot,, i+1)) {
-								value := StrReplace(SubStr(text, pos+1, i-pos-1), "\\", "\u005c")
-
-								static tail := A_AhkVersion<"2" ? 0 : -1
-								if (SubStr(value, tail) != "\")
-									break
-							}
-
-							if (!i)
-								this.ParseError("'", text, pos)
-
-							  value := StrReplace(value,  "\/",  "/")
-							, value := StrReplace(value, bashq, quot)
-							, value := StrReplace(value,  "\b", "`b")
-							, value := StrReplace(value,  "\f", "`f")
-							, value := StrReplace(value,  "\n", "`n")
-							, value := StrReplace(value,  "\r", "`r")
-							, value := StrReplace(value,  "\t", "`t")
-
-							pos := i ; update pos
-							
-							i := 0
-							while (i := InStr(value, "\",, i+1)) {
-								if !(SubStr(value, i+1, 1) == "u")
-									this.ParseError("\", text, pos - StrLen(SubStr(value, i+1)))
-
-								uffff := Abs("0x" . SubStr(value, i+2, 4))
-								if (A_IsUnicode || uffff < 0x100)
-									value := SubStr(value, 1, i-1) . Chr(uffff) . SubStr(value, i+6)
-							}
-
-							if (is_key) {
-								key := value, next := ":"
-								continue
-							}
-						
-						} else {
-							value := SubStr(text, pos, i := RegExMatch(text, "[\]\},\s]|$",, pos)-pos)
-
-							static number := "number", integer :="integer"
-							if value is %number%
-							{
-								if value is %integer%
-									value += 0
-							}
-							else if (value == "true" || value == "false")
-								value := %value% + 0
-							else if (value == "null")
-								value := ""
-							else
-							; we can do more here to pinpoint the actual culprit
-							; but that's just too much extra work.
-								this.ParseError(next, text, pos, i)
-
-							pos += i-1
-						}
-
-						next := holder==root ? "" : is_array ? ",]" : ",}"
-					} ; If InStr("{[", ch) { ... } else
-
-					is_array? key := ObjPush(holder, value) : holder[key] := value
-
-					if (this.keys && this.keys.HasKey(holder))
-						this.keys[holder].Push(key)
-				}
-			
-			} ; while ( ... )
-
-			return this.rev ? this.Walk(root, "") : root[""]
-		}
-
-		ParseError(expect, ByRef text, pos, len:=1)
-		{
-			static quot := Chr(34), qurly := quot . "}"
-			
-			line := StrSplit(SubStr(text, 1, pos), "`n", "`r").Length()
-			col := pos - InStr(text, "`n",, -(StrLen(text)-pos+1))
-			msg := Format("{1}`n`nLine:`t{2}`nCol:`t{3}`nChar:`t{4}"
-			,     (expect == "")     ? "Extra data"
-			    : (expect == "'")    ? "Unterminated string starting at"
-			    : (expect == "\")    ? "Invalid \escape"
-			    : (expect == ":")    ? "Expecting ':' delimiter"
-			    : (expect == quot)   ? "Expecting object key enclosed in double quotes"
-			    : (expect == qurly)  ? "Expecting object key enclosed in double quotes or object closing '}'"
-			    : (expect == ",}")   ? "Expecting ',' delimiter or object closing '}'"
-			    : (expect == ",]")   ? "Expecting ',' delimiter or array closing ']'"
-			    : InStr(expect, "]") ? "Expecting JSON value or array closing ']'"
-			    :                      "Expecting JSON value(string, number, true, false, null, object or array)"
-			, line, col, pos)
-
-			static offset := A_AhkVersion<"2" ? -3 : -4
-			throw Exception(msg, offset, SubStr(text, pos, len))
-		}
-
-		Walk(holder, key)
-		{
-			value := holder[key]
-			if IsObject(value) {
-				for i, k in this.keys[value] {
-					; check if ObjHasKey(value, k) ??
-					v := this.Walk(value, k)
-					if (v != JSON.Undefined)
-						value[k] := v
-					else
-						ObjDelete(value, k)
-				}
-			}
-			
-			return this.rev.Call(holder, key, value)
-		}
-	}
-
-	/**
-	 * Method: Dump
-	 *     Converts an AHK value into a JSON string
-	 * Syntax:
-	 *     str := JSON.Dump( value [, replacer, space ] )
-	 * Parameter(s):
-	 *     str        [retval] - JSON representation of an AHK value
-	 *     value          [in] - any value(object, string, number)
-	 *     replacer  [in, opt] - function object, similar to JavaScript's
-	 *                           JSON.stringify() 'replacer' parameter
-	 *     space     [in, opt] - similar to JavaScript's JSON.stringify()
-	 *                           'space' parameter
-	 */
-	class Dump extends JSON.Functor
-	{
-		Call(self, value, replacer:="", space:="")
-		{
-			this.rep := IsObject(replacer) ? replacer : ""
-
-			this.gap := ""
-			if (space) {
-				static integer := "integer"
-				if space is %integer%
-					Loop, % ((n := Abs(space))>10 ? 10 : n)
-						this.gap .= " "
-				else
-					this.gap := SubStr(space, 1, 10)
-
-				this.indent := "`n"
-			}
-
-			return this.Str({"": value}, "")
-		}
-
-		Str(holder, key)
-		{
-			value := holder[key]
-
-			if (this.rep)
-				value := this.rep.Call(holder, key, ObjHasKey(holder, key) ? value : JSON.Undefined)
-
-			if IsObject(value) {
-			; Check object type, skip serialization for other object types such as
-			; ComObject, Func, BoundFunc, FileObject, RegExMatchObject, Property, etc.
-				static type := A_AhkVersion<"2" ? "" : Func("Type")
-				if (type ? type.Call(value) == "Object" : ObjGetCapacity(value) != "") {
-					if (this.gap) {
-						stepback := this.indent
-						this.indent .= this.gap
-					}
-
-					is_array := value.IsArray
-				; Array() is not overridden, rollback to old method of
-				; identifying array-like objects. Due to the use of a for-loop
-				; sparse arrays such as '[1,,3]' are detected as objects({}). 
-					if (!is_array) {
-						for i in value
-							is_array := i == A_Index
-						until !is_array
-					}
-
-					str := ""
-					if (is_array) {
-						Loop, % value.Length() {
-							if (this.gap)
-								str .= this.indent
-							
-							v := this.Str(value, A_Index)
-							str .= (v != "") ? v . "," : "null,"
-						}
-					} else {
-						colon := this.gap ? ": " : ":"
-						for k in value {
-							v := this.Str(value, k)
-							if (v != "") {
-								if (this.gap)
-									str .= this.indent
-
-								str .= this.Quote(k) . colon . v . ","
-							}
-						}
-					}
-
-					if (str != "") {
-						str := RTrim(str, ",")
-						if (this.gap)
-							str .= stepback
-					}
-
-					if (this.gap)
-						this.indent := stepback
-
-					return is_array ? "[" . str . "]" : "{" . str . "}"
-				}
-			
-			} else ; is_number ? value : "value"
-				return ObjGetCapacity([value], 1)=="" ? value : this.Quote(value)
-		}
-
-		Quote(string)
-		{
-			static quot := Chr(34), bashq := "\" . quot
-
-			if (string != "") {
-				  string := StrReplace(string,  "\",  "\\")
-				; , string := StrReplace(string,  "/",  "\/") ; optional in ECMAScript
-				, string := StrReplace(string, quot, bashq)
-				, string := StrReplace(string, "`b",  "\b")
-				, string := StrReplace(string, "`f",  "\f")
-				, string := StrReplace(string, "`n",  "\n")
-				, string := StrReplace(string, "`r",  "\r")
-				, string := StrReplace(string, "`t",  "\t")
-
-				static rx_escapable := A_AhkVersion<"2" ? "O)[^\x20-\x7e]" : "[^\x20-\x7e]"
-				while RegExMatch(string, rx_escapable, m)
-					string := StrReplace(string, m.Value, Format("\u{1:04x}", Ord(m.Value)))
-			}
-
-			return quot . string . quot
-		}
-	}
-
-	/**
-	 * Property: Undefined
-	 *     Proxy for 'undefined' type
-	 * Syntax:
-	 *     undefined := JSON.Undefined
-	 * Remarks:
-	 *     For use with reviver and replacer functions since AutoHotkey does not
-	 *     have an 'undefined' type. Returning blank("") or 0 won't work since these
-	 *     can't be distnguished from actual JSON values. This leaves us with objects.
-	 *     Replacer() - the caller may return a non-serializable AHK objects such as
-	 *     ComObject, Func, BoundFunc, FileObject, RegExMatchObject, and Property to
-	 *     mimic the behavior of returning 'undefined' in JavaScript but for the sake
-	 *     of code readability and convenience, it's better to do 'return JSON.Undefined'.
-	 *     Internally, the property returns a ComObject with the variant type of VT_EMPTY.
-	 */
-	Undefined[]
-	{
-		get {
-			static empty := {}, vt_empty := ComObject(0, &empty, 1)
-			return vt_empty
-		}
-	}
-
-	class Functor
-	{
-		__Call(method, ByRef arg, args*)
-		{
-		; When casting to Call(), use a new instance of the "function object"
-		; so as to avoid directly storing the properties(used across sub-methods)
-		; into the "function object" itself.
-			if IsObject(method)
-				return (new this).Call(method, arg, args*)
-			else if (method == "")
-				return (new this).Call(arg, args*)
-		}
-	}
-}
 ;++++++++++++++++++++++++++++++++++++++++++++++++++ sBinder-Start ++++++++++++++++++++++++++++++++++++++++++++++++++
 
 /*
@@ -4508,15 +4135,10 @@ if(UseAPI){
 IniWrite, % 1, %INIFile%, Settings, UseAPI
 data := HTTPData("https://api.github.com/repos/hyojal/sBinder-0.3DL/tags")
 global gitVersion := subStr(data,11,3)
-global soundsEnabled
 
 if(InStr(data,"API rate limit exceeded") OR !InStr(data,"."))
 gitVersion := 0 
-IniRead, enabled, %INIFile%, Settings, EnableSounds
-if((enable==0) OR (enable=="ERROR"))
-soundsEnabled := 0
-else
-soundsEnabled := 1
+
 IfNotExist, sounds
 FileCreateDir , sounds
 
@@ -4528,7 +4150,10 @@ if(!FileExist("sounds\wasted.mp3"))
 URLDownloadToFile, https://www.myinstants.com/media/sounds/wasted_2.mp3, sounds\wasted.mp3
 if(!FileExist("sounds\fishing.mp3"))
 URLDownloadToFile, https://www.myinstants.com/media/sounds/swoosh-sound-effects.mp3, sounds\fishing.mp3
-
+IniRead, killSoundEnabled, %INIFile%, Sounds, Killsound , 0
+IniRead, deathSoundEnabled, %INIFile%, Sounds, Deathsound , 0
+IniRead, fishingSoundEnabled, %INIFile%, Sounds, Fishingsound , 0
+IniRead, damageSoundEnabled, %INIFile%, Sounds, Damagesound , 0
 
 AddChatMessage(Text, color=0xFF6600, nosplit=0, indent=0){
 	global UseAPI, AddChatMessage_func
@@ -4574,17 +4199,6 @@ AddChatMessage(Text, color=0xFF6600, nosplit=0, indent=0){
 	return i*res
 }
 
-GetPlayerPosition(ByRef flo_posX, ByRef flo_posY, ByRef flo_posZ){
-	global GetPlayerPosition_func
-	return DllCall(GetPlayerPosition_func, FloatP, flo_posX, FloatP, flo_posY, FloatP, flo_posZ)
-}
-GetVehicleModel(){
-	global GetVehicleModelId_func, UseAPI
-	if(UseAPI)
-		return DllCall(GetVehicleModelId_func)
-	else
-		return 0
-}
 
 SendChat(Text, spamcount=3, GoToTextbinds=1){
 	global UseAPI, SendChat_func, UseTimerActive
@@ -5151,119 +4765,7 @@ number_format(num){
 	return RegExReplace(num, "\B(?=(\d{3})+(?!\d))", ".")
 }
 OverlayReplace(text, InVehicle){
-	static called, GetPlayerHealth_func, GetPlayerArmor_func, GetPlayerId_func, GetPlayerMoney_func, GetZoneName_func, GetCityName_func, GetVehicleHealth_func, GetFramerate_func, GetVehicleSpeed_func, GetVehicleModelId_func, GetVehicleModelName_func, IsVehicleLocked_func, IsVehicleEngineEnabled_func, IsVehicleLightEnabled_func, old_id
-	global UseAPI, Nickname, hModule, LastUseLsd, NextUseGreenDonutGold, lastPlayerHealth, lastPlayerArmor
-	if(!UseAPI)
-		return
-	if(!called){
-		called := 1
-		GetPlayerHealth_func := DllCall("GetProcAddress", UInt, hModule, AStr, "GetPlayerHealth")
-		GetPlayerArmor_func := DllCall("GetProcAddress", UInt, hModule, AStr, "GetPlayerArmor")
-		GetPlayerId_func := DllCall("GetProcAddress", UInt, hModule, AStr, "GetPlayerId")
-		GetPlayerMoney_func := DllCall("GetProcAddress", UInt, hModule, AStr, "GetPlayerMoney")
-		GetZoneName_func := DllCall("GetProcAddress", UInt, hModule, AStr, "GetZoneName")
-		GetCityName_func := DllCall("GetProcAddress", UInt, hModule, AStr, "GetCityName")
-		GetVehicleHealth_func := DllCall("GetProcAddress", UInt, hModule, AStr, "GetVehicleHealth")
-		GetFrameRate_func := DllCall("GetProcAddress", UInt, hModule, AStr, "GetFrameRate")
-		GetVehicleSpeed_func := DllCall("GetProcAddress", UInt, hModule, AStr, "GetVehicleSpeed")
-		GetVehicleModelId_func := DllCall("GetProcAddress", UInt, hModule, AStr, "GetVehicleModelId")
-		GetVehicleModelName_func := DllCall("GetProcAddress", UInt, hModule, AStr, "GetVehicleModelName")
-		IsVehicleLocked_func := DllCall("GetProcAddress", UInt, hModule, AStr, "IsVehicleLocked")
-		IsVehicleEngineEnabled_func := DllCall("GetProcAddress", UInt, hModule, AStr, "IsVehicleEngineEnabled")
-		IsVehicleLightEnabled_func := DllCall("GetProcAddress", UInt, hModule, AStr, "IsVehicleLightEnabled")
-	}
-	if(InStr(text, "[HP]"))
-		StringReplace, text, text, [HP], % GetPlayerHealth(), All
-	if(InStr(text, "[Armor]"))
-		StringReplace, text, text, [Armor], % DllCall(GetPlayerArmor_func), All
-	/*
-	if(InStr(text, "[ID]")){
-		if((id := DllCall(GetPlayerId_func)) = 65535){
-			if(old_id != "")
-				id := old_id
-			else
-				id := "[Fehler]"
-		}
-		else
-			old_id := id
-		StringReplace, text, text, [ID], %id%, All
-	}
-	*/
-	if(InStr(text, "[Money]"))
-		StringReplace, text, text, [Money], % number_format(DllCall(GetPlayerMoney_func)), All
-	if(InStr(text, "[Zone]")) {
-		VarSetCapacity(Zone, 64, 0)
-		res :=DllCall(GetZoneName_func, "StrP", Zone, "Int", 32)
-		Zone := StrGet(&Zone, "cp0")
-		StringReplace, text, text, [Zone], % res ? Zone : "[Fehler]", All
-	}
-	if(InStr(text, "[City]")) {
-		VarSetCapacity(City, 64, 0)
-		res := DllCall(GetCityName_func, "StrP", City, "Int", 32)
-		City := StrGet(&City, "cp0")
-		StringReplace, text, text, [City], % res ? City : "[Fehler]", All
-	}
-	if(InStr(text, "[CarHeal]"))
-		StringReplace, text, text, [CarHeal], % ((dl := DllCall(GetVehicleHealth_func, "Cdecl Float")) > 0) ? number_format(Round(dl)) : "[Fehler]", All
-	if(InStr(text, "[CarName]")) {
-		VarSetCapacity(name, 64, 0)
-		res := DllCall(GetVehicleModelName_func, StrP, name, Int, 32)
-		name := StrGet(&name, "cp0")
-		StringReplace, text, text, [CarName], % res ? name : "[Fehler]", All
-	}
-	if(InStr(text, "[CarModel]"))
-		StringReplace, text, text, [CarModel], % (model := DllCall(GetVehicleModelId_func)) ? model : "[Fehler]", All
-	if(InStr(text, "[CarLock]"))
-		StringReplace, text, text, [CarLock], % ["[Fehler]", "aufgeschlossen", "abgeschlossen"][DllCall(IsVehicleLocked_func)-!InVehicle+2], All
-	if(InStr(text, "[CarMotor]"))
-		StringReplace, text, text, [CarMotor], % ["[Fehler]", "aus", "an"][DllCall(IsVehicleEngineEnabled_func)-!InVehicle+2], All
-	if(InStr(text, "[CarLight]"))
-		StringReplace, text, text, [CarLight], % ["[Fehler]", "aus", "an"][DllCall(IsVehicleLightEnabled_func)-!InVehicle+2], All
-	if(InStr(text, "[CarSpeed]"))
-		StringReplace, text, text, [CarSpeed], % (InVehicle AND (speed := DllCall(GetVehicleSpeed_func, Float, 1.62)) > -1) ? speed : "[Fehler]", All
-	if(InStr(text, "[FPS]"))
-		StringReplace, text, text, [FPS], % DllCall(GetFrameRate_func), All
-	if(InStr(text, "[Time]"))
-		StringReplace, text, text, [Time], % A_Hour ":" A_Min ":" A_Sec, All
-	if(InStr(text, "[Date]"))
-		StringReplace, text, text, [Date], % A_DD "." A_MM "." A_YYYY, All
-	if(InStr(text, "[NL")){
-		NL := NextNovaLocation()
-		StringReplace, text, text, [NL], % NL["Name"], All
-		StringReplace, text, text, [NLDistance], % NL["Distance"] = "-" ? "-" : Round(NL["Distance"]) "m", All
-	}
-	if(InStr(text, "[Name]"))
-		StringReplace, text, text, [Name], % Nickname ? Nickname : SAMPName, All
-	if(InStr(text, "[LsdTimer]")){
-		replaceText := "-"
-		if (LastUseLsd > 0){
-			diff := Round((A_TickCount - LastUseLSD) / 1000)
-			if(diff < 90)
-				replaceText := "Nachwirkungen " (90 - diff) "s/Use " (120 - diff) "s"
-			else if(diff < 120)
-				replaceText := "Use möglich in " (120 - diff) "s"
-			else if (diff < 180)
-				replaceText := "(Use möglich)"
-		}
-		StringReplace, text, text, [LsdTimer], %replaceText%, All
-	}
-	if(InStr(text, "[GreenTimer]") OR InStr(text, "[DonutTimer]") OR InStr(text, "[GoldTImer]")){
-		replaceText := "-"
-		if (NextUseGreenDonutGold > 0){
-			diff := Round((NextUseGreenDonutGold - A_TickCount) / 1000)
-			if(diff > 0)
-				replaceText := "Use möglich in " diff "s"
-			else if (diff > -60)
-				replaceText := "(Use möglich)"
-		}
-		StringReplace, text, text, [GreenTimer], %replaceText%, All
-		StringReplace, text, text, [DonutTimer], %replaceText%, All
-		StringReplace, text, text, [GoldTimer], %replaceText%, All
-	}
-	charMap := {"Ä": "Ae", "ä": "ae", "Ö": "oe", "ö": "oe", "Ü": "Ue", "ü": "ue", "ß": "ss"}
-	for char in charMap
-		text := RegExReplace(text, "i)" char, charMap[char])
-	return text
+	return
 }
 ping(host, packagesize=32, timeout=5000){ ;http://www.autohotkey.com/de/forum/viewtopic.php?t=8710 //Bentschi
 	static packagecontent := "AHK PING TEST -+- "
@@ -5891,15 +5393,6 @@ getNumberOfPassengers()
     }
     return r
 }
-verstaerkung()
-{
-if(isPlayerInAnyVehicle())
-{
-return "VS » Brauche Verstärkung in " GetPlayerZone() ", " GetPlayerCity()". Im Fahrzeug " GetVehicleModelName() " mit " Round(GetVehicleSpeed()) "km/h" 
-}
-else
-return "VS » Brauche Verstärkung in " GetPlayerZone() ", " GetPlayerCity()". Zu Fuß unterwegs"
-}
 incoming()
 {
 chat := GetChatLines(10)
@@ -5916,7 +5409,7 @@ if(InStr(GetVehicleModelName(),plane[i]))
 typeVeh := "in"
 if(getNumberOfPassengers()<1)
 if(InStr(chat,"VS » ") AND IsMarkerCreated())
-return "INC « Aus Richtung " GetPlayerZone() " ("Round(GetDist(GetPlayerCoordinates(),CoordsFromRedmarker()))"m). Mit " GetVehicleModelName()" auf dem Weg"
+return "INC « Aus Richtung " GetPlayerZone() " ("Round(GetDist(GetPlayerCoordinates(),CoordsFromRedmarker()))"m). Unterwegs " typeVeh " " GetVehicleModelName()
 else
 return "INC « Aus Richtung " GetPlayerZone() ". Unterwegs " typeVeh " " GetVehicleModelName()
 
@@ -6161,6 +5654,10 @@ IniWrite, %Tel%, %INIFile%, Telefon, Active
 IniWrite, %pText%, %INIFile%, Telefon, p
 IniWrite, %hText%, %INIFile%, Telefon, h
 IniWrite, %abText%, %INIFile%, Telefon, ab
+IniWrite, %killSoundEnabled%, %INIFile%, Sounds, Killsound
+IniWrite, %deathSoundEnabled%, %INIFile%, Sounds, Deathsound
+IniWrite, %fishingSoundEnabled%, %INIFile%, Sounds, Fishingsound
+IniWrite, %damageSoundEnabled%, %INIFile%, Sounds, Damagesound
 if(AutoHitsound)
 	SetTimer, AutoHitsound, 1000
 else
@@ -6312,7 +5809,7 @@ TempGUI2GuiClose:
 Gui, TempGUI2:Destroy
 return
 Variables:
-Version := "2.3"
+Version := "2.4"
 Build := 84
 active := 1
 ;INIFile := A_ScriptDir "\keybinder.ini"
@@ -6580,7 +6077,7 @@ Gui, AboutGUI:Add, Picture, x0 y5, %A_AppData%\sBinder\bg.png
 Gui, AboutGUI:Add, Link, x10, % "Version: " Version "`n`nEhemaliger Entwickler: IcedWave`nModifiziert von Nova Community`nCopyright © 2012-2015 IcedWave`n`nProgrammiert mit <a href=""http://autohotkey.com"">Autohotkey</a> Version " A_AhkVersion
 Gui, AboutGUI:Menu, MenuBar
 ;SettingsGUI
-Gui, SettingsGUI:Add, Tab2, -Background +Theme -Wrap x5 y5 w525 h340 vSettingsTab, Seite 1|Seite 2|Erweiterte Optionen
+Gui, SettingsGUI:Add, Tab2, -Background +Theme -Wrap x5 y5 w525 h340 vSettingsTab, Seite 1|Seite 2|Erweiterte Optionen|Sounds
 Gui, SettingsGUI:Tab, 1
 ;Tab 1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 y := 50
@@ -6633,6 +6130,7 @@ if(OverlayActive)
 	Gui, SettingsGUI:Add, Button, % "x100 y" y " h20 vOvSettings gOverlayGUI", Overlay-Einstellungen
 GuiControl, SettingsGUI:Enable%UseAPI%, OvSettings
 Gui, SettingsGUI:Add, Button, x505 y%y% h20 w12 gHelp18, ?
+
 Gui, SettingsGUI:Tab, 2
 ;Tab 2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 y := 50
@@ -6712,6 +6210,12 @@ y += 30
 Gui, SettingsGUI:Tab
 Gui, SettingsGUI:Add, Text, x5, sBinder 0.3DL v%Version%
 Gui, SettingsGUI:Add, ListBox, x535 y25 w150 h320 gSettingsChangeTab vSettingsListBox AltSubmit Choose1 0x100, Allgemeine Einstellungen|Ingame-Einstellungen|   Telefontexte|Pfade|/trucking|Programme mitstarten|Erweiterte Optionen
+Gui, SettingsGUI:Tab, 4
+Gui, SettingsGUI:Add, CheckBox, x10 y30 w120 h23 vkillSoundEnabled Checked%killSoundEnabled%, Kill
+Gui, SettingsGUI:Add, CheckBox, x10 y55 w120 h23 vdeathSoundEnabled Checked%deathSoundEnabled%, Wasted
+Gui, SettingsGUI:Add, CheckBox, x10 y80 w120 h23 vdamageSoundEnabled Checked%damageSoundEnabled%, Schaden bekommen 
+Gui, SettingsGUI:Add, CheckBox, x10 y105 w120 h23 vfishingSoundEnabled Checked%fishingSoundEnabled%, Angeln 
+
 Gui, SettingsGUI:Menu, MenuBar
 ;CreditsGUI
 Gui, CreditsGUI:Font, S15 bold
@@ -8026,10 +7530,7 @@ if(!WinActive("ahk_group GTASA") OR WinActive("ahk_class AutoHotkeyGUI")){
 GetChatLine(0, chat)
 if(InStr(chat,"SERVER: Du hast gerade einen Mord begangen. Achtung!") AND !InStr(chat, "sagt") AND !InStr(chat, ")") AND !InStr(chat, "*") AND !InStr(chat, "schreit") AND !InStr(chat, "flüstert")){
 IniRead, message, %INIFile%, Settings, Killbinder
-if((message!="") AND (message!="ERROR"))
-{
-BindReplace(message)
-if(soundsEnabled)
+if(killSoundEnabled)
 {
 SoundGet originalVolume
 SoundSet 30
@@ -8037,9 +7538,12 @@ SoundPlay, sounds\kill.mp3
 Sleep 400
 SoundSet originalVolume
 }
+if((message!="") AND (message!="ERROR"))
+{
+BindReplace(message)
 }
 }
-if(soundsEnabled)
+if(fishingSoundEnabled)
 {
 if(InStr(chat,"Dein Fang scheint sich") AND !InStr(chat, "sagt") AND !InStr(chat, ")") AND !InStr(chat, "*") AND !InStr(chat, "schreit") AND !InStr(chat, "flüstert"))
 {
@@ -8050,7 +7554,15 @@ SoundPlay, sounds\fishing.mp3
 Sleep 400
 SoundSet originalVolume
 }
+}
+if(damageSoundEnabled)
+{
 if((GetPlayerHealth() < lastPlayerHealth-10) OR (GetPlayerArmor() < lastPlayerArmor-10))
+{
+if((GetPlayerState()==1) OR (GetPlayerState()==50))
+{
+chatlines := GetChatLines(5)
+if((!InStr(chatlines,"Connected to German Nova") AND (!InStr(chatlines,"FMOTD:") AND (!InStr(chatlines,"SA-MP 0.3.DL-R1")))))
 {
 SoundGet originalVolume
 SoundSet 30
@@ -8058,19 +7570,23 @@ SoundPlay, sounds\damageinc.mp3
 Sleep 400
 SoundSet originalVolume
 }
+}
+}
+}
 lastPlayerArmor := GetPlayerArmor()
 lastPlayerHealth := GetPlayerHealth()
+if(deathSoundEnabled)
+{
 if(InStr(chat,"NOTRUF: Da dein NovaHealth") AND !InStr(chat, "sagt") AND !InStr(chat, ")") AND !InStr(chat, "*") AND !InStr(chat, "schreit") AND !InStr(chat, "flüstert"))
 {
-
 SoundGet originalVolume
-SoundSet 30
+SoundSet 20
 SoundPlay, sounds\wasted.mp3
-Sleep 400
+Sleep 7000
 SoundSet originalVolume
-WaitForChatLine(0,"Du bist nun auf dem Friedhof",10,100,0)
 }
 }
+
 return
 ::/kstop::
 Del::
@@ -8090,6 +7606,7 @@ Suspend Off
 Hotkey, ~NumpadEnter, Off
 Hotkey, ~Enter, Off
 Hotkey, ~Escape, Off
+Hotkey, ~LButton, Off
 return
 ~t::
 ~+t::
@@ -8097,6 +7614,7 @@ Suspend On
 Hotkey, ~NumpadEnter, On
 Hotkey, ~Enter, On
 Hotkey, ~Escape, On
+Hotkey, ~LButton, On
 return
 ~NumpadEnter::
 ~Enter::
@@ -8104,6 +7622,14 @@ Suspend Off
 Hotkey, ~NumpadEnter, Off
 Hotkey, ~Enter, Off
 Hotkey, ~Escape, Off
+Hotkey, ~LButton, Off
+return
+~LButton::
+Suspend Off
+Hotkey, ~NumpadEnter, Off
+Hotkey, ~Enter, Off
+Hotkey, ~Escape, Off
+Hotkey, ~LButton, Off
 return
 #If hmv && WinActive("ahk_group GTASA")
 ~h::
@@ -8611,7 +8137,7 @@ return
 #if (IsFrak(2) OR IsFrak(3) OR IsFrak(11)) AND WinActive("ahk_group GTASA") AND UseAPI
 ::/vs::
 Suspend Permit
-SendChat("/d " verstaerkung())
+SendChat("/callvs")
 return
 #if (IsFrak(2) OR IsFrak(3) OR IsFrak(11)) AND WinActive("ahk_group GTASA") AND UseAPI
 ::/inc::
@@ -8961,7 +8487,7 @@ if(LV_GetCount()){
 			trucking_places := ["Zombotech", "Raffinerie", "Kraftwerk SF", "Radio SF", "Sägewerk", "Truckstop", "LV Productions", "Lagerverkauf", "LS Train Station", "LS Docks", "Fleischberg"]
 			if(UseAPI){
 				trucking_places := [{x: -1954, y: 617, z: 35}, {x: 264, y: 1415, z: 12}, {x: -1019, y: -662, z: 32}, {x: -2520, y: -618, z: 133}, {x: -2003, y: -2414, z: 31}, {x: -53, y: -1141, z: 1}, {x: -224, y: 2601, z: 64}, {x: 1449, y: 2350, z: 12}, {x: 2186, y: -2277, z: 13}, {x: 2760, y: -2451, z: 13}, {x: -119, y: -353, z: 1}]
-				GetPlayerPosition(pos_x, pos_y, pos_z)
+				
 				for index, k in trucking_places
 					trucking_places[index] := Pythagoras(k["x"] - pos_x, k["y"] - pos_y, k["z"] - pos_z)
 				for index, k in Truck_LV
@@ -10926,23 +10452,42 @@ return
 Suspend Permit
 SendChat("/accept sduty " GetClosestPlayerId())
 return
-::/seffects::
+::/stakedrogen::
 Suspend Permit
-IniRead, isEnabled, %INIFile%, Settings, EnableSounds
-if((isEnabled==0) OR (isEnabled=="ERROR"))
-{
-IniWrite, % 1, %INIFile%, Settings, EnableSounds
-soundsEnabled := 1
-AddChatMessage("sBinder Sounds aktiviert.")
-}
-else
-{
-IniWrite, % 0, %INIFile%, Settings, EnableSounds
-soundsEnabled := 0
-AddChatMessage("sBinder Sounds deaktiviert.")
-}
+SendChat("/take drogen " GetClosestPlayerId())
 return
-
+::/stakeweap::
+Suspend Permit
+SendChat("/take waffen " GetClosestPlayerId())
+return
+::/stakearmor::
+Suspend Permit
+SendChat("/take armour " GetClosestPlayerId())
+return
+::/stakedbg::
+Suspend Permit
+SendChat("/take diebesgut " GetClosestPlayerId())
+return
+::/respawn::
+Suspend Permit
+SendChat("/r >>> CAR RESPAWN IN 10 SEKUNDEN <<< ")
+Sleep, 5000
+SendChat("/r >>> 5 <<< ")
+Sleep, 1000
+SendChat("/r >>> 4 <<< ")
+Sleep, 1000
+SendChat("/r >>> 3 <<< ")
+Sleep, 1000
+SendChat("/r >>> 2 <<< ")
+Sleep, 1000
+SendChat("/r >>> 1 <<< ")
+Sleep, 1000
+SendChat("/respawnfv")
+return
+::/sbadge::
+Suspend Permit
+SendChat("/showbadge " GetClosestPlayerId())
+return
 /*
 ö::
 AddChatMessage(IsChatOpen())
