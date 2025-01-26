@@ -4134,9 +4134,12 @@ if(UseAPI){
 
 IniWrite, % 1, %INIFile%, Settings, UseAPI
 data := HTTPData("https://api.github.com/repos/hyojal/sBinder-0.3DL/tags")
+if !RegExMatch(subStr(data,14,1),"[0-9]+")
 global gitVersion := subStr(data,11,3)
+else
+global gitVersion := subStr(data,11,4)
 
-if(InStr(data,"API rate limit exceeded") OR !InStr(data,"."))
+if(InStr(data,"API rate limit exceeded") OR !InStr(subStr(data,11,3),"."))
 gitVersion := 0 
 
 IfNotExist, sounds
@@ -5481,7 +5484,7 @@ gosub FrakChangeGuiBuild
 gosub HotkeysDefine
 gosub Downloads
 if(OverlayActive AND UseAPI)
-	SetTimerNow("Overlay", 100)
+	SetTimerNow("Overlay", 200)
 Sleep, 20
 if(Startup_Fraps)
 	SetTimer, RunFraps, % Abs(Startup_Fraps_Delay) * -1000
@@ -5809,7 +5812,7 @@ TempGUI2GuiClose:
 Gui, TempGUI2:Destroy
 return
 Variables:
-Version := "2.4"
+Version := "2.5"
 Build := 84
 active := 1
 ;INIFile := A_ScriptDir "\keybinder.ini"
@@ -7530,17 +7533,16 @@ if(!WinActive("ahk_group GTASA") OR WinActive("ahk_class AutoHotkeyGUI")){
 GetChatLine(0, chat)
 if(InStr(chat,"SERVER: Du hast gerade einen Mord begangen. Achtung!") AND !InStr(chat, "sagt") AND !InStr(chat, ")") AND !InStr(chat, "*") AND !InStr(chat, "schreit") AND !InStr(chat, "flüstert")){
 IniRead, message, %INIFile%, Settings, Killbinder
-if(killSoundEnabled)
-{
-SoundGet originalVolume
-SoundSet 30
-SoundPlay, sounds\kill.mp3
-Sleep 400
-SoundSet originalVolume
-}
 if((message!="") AND (message!="ERROR"))
 {
 BindReplace(message)
+Sleep, 100
+}
+else if(killSoundEnabled)
+AddChatMessage("Kill Sound")
+if(killSoundEnabled)
+{
+SoundPlay, sounds\kill.mp3
 }
 }
 if(fishingSoundEnabled)
@@ -7548,11 +7550,7 @@ if(fishingSoundEnabled)
 if(InStr(chat,"Dein Fang scheint sich") AND !InStr(chat, "sagt") AND !InStr(chat, ")") AND !InStr(chat, "*") AND !InStr(chat, "schreit") AND !InStr(chat, "flüstert"))
 {
 AddChatMessage("Fisch wehrt sich")
-SoundGet originalVolume
-SoundSet 30
 SoundPlay, sounds\fishing.mp3
-Sleep 400
-SoundSet originalVolume
 }
 }
 if(damageSoundEnabled)
@@ -7564,11 +7562,7 @@ if((GetPlayerState()==1) OR (GetPlayerState()==50))
 chatlines := GetChatLines(5)
 if((!InStr(chatlines,"Connected to German Nova") AND (!InStr(chatlines,"FMOTD:") AND (!InStr(chatlines,"SA-MP 0.3.DL-R1")))))
 {
-SoundGet originalVolume
-SoundSet 30
 SoundPlay, sounds\damageinc.mp3
-Sleep 400
-SoundSet originalVolume
 }
 }
 }
@@ -7579,11 +7573,7 @@ if(deathSoundEnabled)
 {
 if(InStr(chat,"NOTRUF: Da dein NovaHealth") AND !InStr(chat, "sagt") AND !InStr(chat, ")") AND !InStr(chat, "*") AND !InStr(chat, "schreit") AND !InStr(chat, "flüstert"))
 {
-SoundGet originalVolume
-SoundSet 20
 SoundPlay, sounds\wasted.mp3
-Sleep 7000
-SoundSet originalVolume
 }
 }
 
