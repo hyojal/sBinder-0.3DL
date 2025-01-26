@@ -7539,10 +7539,11 @@ BindReplace(message)
 Sleep, 100
 }
 else if(killSoundEnabled)
-AddChatMessage("Kill Sound")
+AddChatMessage("Kill Sound abgespielt")
 if(killSoundEnabled)
 {
 SoundPlay, sounds\kill.mp3
+Sleep, 100
 }
 }
 if(fishingSoundEnabled)
@@ -7551,6 +7552,7 @@ if(InStr(chat,"Dein Fang scheint sich") AND !InStr(chat, "sagt") AND !InStr(chat
 {
 AddChatMessage("Fisch wehrt sich")
 SoundPlay, sounds\fishing.mp3
+Sleep, 100
 }
 }
 if(damageSoundEnabled)
@@ -7563,6 +7565,7 @@ chatlines := GetChatLines(5)
 if((!InStr(chatlines,"Connected to German Nova") AND (!InStr(chatlines,"FMOTD:") AND (!InStr(chatlines,"SA-MP 0.3.DL-R1")))))
 {
 SoundPlay, sounds\damageinc.mp3
+Sleep, 100
 }
 }
 }
@@ -7574,6 +7577,7 @@ if(deathSoundEnabled)
 if(InStr(chat,"NOTRUF: Da dein NovaHealth") AND !InStr(chat, "sagt") AND !InStr(chat, ")") AND !InStr(chat, "*") AND !InStr(chat, "schreit") AND !InStr(chat, "flüstert"))
 {
 SoundPlay, sounds\wasted.mp3
+Sleep, 7000
 }
 }
 
