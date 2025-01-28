@@ -4144,7 +4144,7 @@ gitVersion := 0
 
 IfNotExist, sounds
 FileCreateDir , sounds
-
+global soundVolume
 if(!FileExist("sounds\damageinc.mp3"))
 URLDownloadToFile, https://www.myinstants.com/media/sounds/roblox-oof-no-delay.mp3, sounds\damageinc.mp3
 if(!FileExist("sounds\kill.mp3"))
@@ -4157,7 +4157,7 @@ IniRead, killSoundEnabled, %INIFile%, Sounds, Killsound , 0
 IniRead, deathSoundEnabled, %INIFile%, Sounds, Deathsound , 0
 IniRead, fishingSoundEnabled, %INIFile%, Sounds, Fishingsound , 0
 IniRead, damageSoundEnabled, %INIFile%, Sounds, Damagesound , 0
-
+IniRead, soundVolume, %INIFile%, Sounds, SoundVolume , 50
 AddChatMessage(Text, color=0xFF6600, nosplit=0, indent=0){
 	global UseAPI, AddChatMessage_func
 	max_len := UseAPI ? 130 : 123
@@ -4243,7 +4243,7 @@ ShowDialog(Style, Title, Text, Button="OK", Button2="Schließen", Id=522){
 	KeyWait, Enter
 	Sleep, 200
 	if(UseAPI AND !WinActive("ahk_class AutoHotkeyGUI"))
-		return ShowDialogA(id,Style,Title,Text,Button,Button2)
+		return ShowDialogA(Style,Title,Text,Button, Button2,id)
 		
 	else if(WinActive("ahk_class AutoHotkeyGUI"))
 		MsgBox, 64, % RegExReplace(Title, "Ui)\{[a-f\d]{6}\}"), % RegExReplace(Text, "Ui)\{[a-f\d]{6}\}")
@@ -5661,6 +5661,7 @@ IniWrite, %killSoundEnabled%, %INIFile%, Sounds, Killsound
 IniWrite, %deathSoundEnabled%, %INIFile%, Sounds, Deathsound
 IniWrite, %fishingSoundEnabled%, %INIFile%, Sounds, Fishingsound
 IniWrite, %damageSoundEnabled%, %INIFile%, Sounds, Damagesound
+IniWrite, %soundVolume%, %INIFile%, Sounds, SoundVolume
 if(AutoHitsound)
 	SetTimer, AutoHitsound, 1000
 else
@@ -5802,7 +5803,7 @@ FileGetSize, size_curr, sBinder_new.exe
 url := "https://github.com/hyojal/sBinder-0.3DL/releases/download/" gitVersion "/sBinder.exe"
 URLDownloadToFile, % url , sBinder_new.exe
 	FileDelete, update.bat
-	FileAppend, % "timeout 1`ndel sBinder.exe `nrename sBinder_new.exe sBinder.exe`ndel update.bat", update.bat
+	FileAppend, % "timeout 2`ndel sBinder.exe `nrename sBinder_new.exe sBinder.exe`nstart sBinder.exe`ndel update.bat", update.bat
 	Run, update.bat,,hide
 	ExitApp
 
@@ -5812,7 +5813,7 @@ TempGUI2GuiClose:
 Gui, TempGUI2:Destroy
 return
 Variables:
-Version := "2.5"
+Version := "2.51"
 Build := 84
 active := 1
 ;INIFile := A_ScriptDir "\keybinder.ini"
@@ -5833,7 +5834,7 @@ DownloadMode := 0
 pi := 4 * ATan(1)
 EnvGet, ProcessorCount, NUMBER_OF_PROCESSORS
 EnvGet, UserProfile, UserProfile
-IniRead, UseAPI, %INIFile%, Settings, UseAPI, 0
+UseAPI := 1
 IniRead, LastUsedBuild, %INIFile%, Settings, LastUsedBuild, 0
  ; Use in Run commands to run another program if and only if the sBinder itself has admin privileges (don't show a UAC dialog!)
 RunPrivileges := A_IsAdmin ? "*RunAs " : ""
@@ -5978,7 +5979,7 @@ Gui, Add, Button, % "Disabled vLastInfo gInfo x18 y" 125+30*GuiButtons + HeightC
 Gui, Add, ActiveX, % "x53 y" 125+30*GuiButtons + HeightCorrection " w310 h80 vInf", Shell.Explorer
 Inf.Silent := 1
 ComObjConnect(Inf, "wb_")
-SetWB(Inf, "Informationen werden geladen...",, InfoColor)
+SetWB(Inf, "",, InfoColor)
 Gui, Add, Button, % "Disabled vNextInfo gInfo x368 y" 125+30*GuiButtons + HeightCorrection " h80 w30", ->
 Menu, NicknameAction, Add, Diesen Namen in SAMP verwenden, NameToSamp
 Menu, NicknameAction, Add, SAMP-Namen auslesen und hier einsetzen, NameFromSamp
@@ -6218,7 +6219,8 @@ Gui, SettingsGUI:Add, CheckBox, x10 y30 w120 h23 vkillSoundEnabled Checked%killS
 Gui, SettingsGUI:Add, CheckBox, x10 y55 w120 h23 vdeathSoundEnabled Checked%deathSoundEnabled%, Wasted
 Gui, SettingsGUI:Add, CheckBox, x10 y80 w120 h23 vdamageSoundEnabled Checked%damageSoundEnabled%, Schaden bekommen 
 Gui, SettingsGUI:Add, CheckBox, x10 y105 w120 h23 vfishingSoundEnabled Checked%fishingSoundEnabled%, Angeln 
-
+Gui, SettingsGUI:Add, Slider, x400 y304 w120 h32  vsoundVolume, % soundVolume
+Gui, SettingsGUI:Add, Text, x400 y280 w75 h23 +0x200, Lautstärke:
 Gui, SettingsGUI:Menu, MenuBar
 ;CreditsGUI
 Gui, CreditsGUI:Font, S15 bold
@@ -6919,7 +6921,7 @@ else
 	ToolTip("TS³ ist bereits aktiv`nBeende es erst`, bevor du es neu startest!", 4000)
 return
 Forum:
-Run, http://forum.nes-newlife.de
+Run, https://forum.nova-network.one/
 return
 RunOtherProgram:
 SetTimer, RunOtherProgram, Off
@@ -6997,11 +6999,11 @@ TextbindsBrowser:
 Run, http://saplayer.lima-city.de/l/sBinder-textbinds
 return
 ChangelogOnline:
-Run, https://github.com/hyojal/sBinder-0.3DL/releases/tag/%gitVersion%
+Run, https://github.com/hyojal/sBinder-0.3DL/releases
 
 return
 ChangelogBrowser:
-Run, https://github.com/hyojal/sBinder-0.3DL/releases/tag/%gitVersion%
+Run, https://github.com/hyojal/sBinder-0.3DL/releases
 return
 ForumThread:
 Run, https://forum.nes-newlife.de/thread/1544-sbinder-by-icedwave/
@@ -7524,12 +7526,6 @@ if(!UseAPI){
 	SetTimer, Overlay, Off
 	return
 }
-if(!WinActive("ahk_group GTASA") OR WinActive("ahk_class AutoHotkeyGUI")){
-	if(!WinExist("ahk_group GTASA"))
-		Ov := [-1, -1, -1]
-	return
-}
-
 GetChatLine(0, chat)
 if(InStr(chat,"SERVER: Du hast gerade einen Mord begangen. Achtung!") AND !InStr(chat, "sagt") AND !InStr(chat, ")") AND !InStr(chat, "*") AND !InStr(chat, "schreit") AND !InStr(chat, "flüstert")){
 IniRead, message, %INIFile%, Settings, Killbinder
@@ -7542,19 +7538,28 @@ else if(killSoundEnabled)
 AddChatMessage("Kill Sound abgespielt")
 if(killSoundEnabled)
 {
-SoundPlay, sounds\kill.mp3
-Sleep, 100
+SoundGet originalVolume
+SoundSet soundVolume
+SoundPlay, sounds\kill.mp3, 1
+SoundSet originalVolume
 }
 }
 if(fishingSoundEnabled)
 {
 if(InStr(chat,"Dein Fang scheint sich") AND !InStr(chat, "sagt") AND !InStr(chat, ")") AND !InStr(chat, "*") AND !InStr(chat, "schreit") AND !InStr(chat, "flüstert"))
 {
-AddChatMessage("Fisch wehrt sich")
-SoundPlay, sounds\fishing.mp3
-Sleep, 100
+if(A_Now>=timer)
+{
+SoundGet originalVolume
+SoundSet soundVolume
+SoundPlay, sounds\fishing.mp3, 1
+SoundSet originalVolume
+timer := A_now + 10
+}
+return
 }
 }
+
 if(damageSoundEnabled)
 {
 if((GetPlayerHealth() < lastPlayerHealth-10) OR (GetPlayerArmor() < lastPlayerArmor-10))
@@ -7564,8 +7569,10 @@ if((GetPlayerState()==1) OR (GetPlayerState()==50))
 chatlines := GetChatLines(5)
 if((!InStr(chatlines,"Connected to German Nova") AND (!InStr(chatlines,"FMOTD:") AND (!InStr(chatlines,"SA-MP 0.3.DL-R1")))))
 {
-SoundPlay, sounds\damageinc.mp3
-Sleep, 100
+SoundGet originalVolume
+SoundSet soundVolume
+SoundPlay, sounds\damageinc.mp3, 1
+SoundSet originalVolume
 }
 }
 }
@@ -7576,8 +7583,10 @@ if(deathSoundEnabled)
 {
 if(InStr(chat,"NOTRUF: Da dein NovaHealth") AND !InStr(chat, "sagt") AND !InStr(chat, ")") AND !InStr(chat, "*") AND !InStr(chat, "schreit") AND !InStr(chat, "flüstert"))
 {
-SoundPlay, sounds\wasted.mp3
-Sleep, 7000
+SoundGet originalVolume
+SoundSet soundVolume
+SoundPlay, sounds\wasted.mp3, 1
+SoundSet originalVolume
 }
 }
 
@@ -7595,36 +7604,7 @@ loop, % (A_IsSuspended ? 2 : 1)
 }
 return
 
-~Escape::
-Suspend Off
-Hotkey, ~NumpadEnter, Off
-Hotkey, ~Enter, Off
-Hotkey, ~Escape, Off
-Hotkey, ~LButton, Off
-return
-~t::
-~+t::
-Suspend On
-Hotkey, ~NumpadEnter, On
-Hotkey, ~Enter, On
-Hotkey, ~Escape, On
-Hotkey, ~LButton, On
-return
-~NumpadEnter::
-~Enter::
-Suspend Off
-Hotkey, ~NumpadEnter, Off
-Hotkey, ~Enter, Off
-Hotkey, ~Escape, Off
-Hotkey, ~LButton, Off
-return
-~LButton::
-Suspend Off
-Hotkey, ~NumpadEnter, Off
-Hotkey, ~Enter, Off
-Hotkey, ~Escape, Off
-Hotkey, ~LButton, Off
-return
+
 #If hmv && WinActive("ahk_group GTASA")
 ~h::
 if(UseAPI AND IsInChat())
@@ -8004,7 +7984,7 @@ else if (IDrugContext == "gold")
 else if (DrugContext == "green")
 	waitForText := "Hawaiian Green benutzt!"
 else if DrugContext == "donut")
-	waitForText := "Du hast" ; Don't actually know the text; hope this works?
+	waitForText := GetPlayerName()" isst einen Donut" ; Don't actually know the text; hope this works?
 if (!WaitForChatLine(0, waitForText))
 	return
 	
@@ -9198,9 +9178,6 @@ return
 #if (IsFrak(2) OR IsFrak(3) OR IsFrak(11)) AND WinActive("ahk_group GTASA")
 ::/wpbinds::
 Suspend Permit
-if(!UseAPI OR !ShowDialogWorking)
-	List(["/anmaßung", "/anschlag", "/itätigkeit", "/braub", "/bflucht (/bhzf)", "/bsgen", "/sperrgebiet (/sg)", "/beleidigung", "/beamtenverweigerung (/bv)", "/bvl (/blösch)", "/bpassv", "/craub", "/diebstahl", "/c4dieb", "/drohung", "/drogen (/drogen1)", "/drogen2", "/drogen3", "/drogentransport (/dtrans)", "/seinbruch", "/peinbruch", "/erpressg", "/erschleichen", "/irpg", "/flucht", "/itüv", "/geiselnahme", "/ggs", "/bhack", "/ihandel", "/hetze", "/whetze", "/waffen", "/isf (/ibs)", "/kv", "/mord", "/ntl", "/pstörung", "/psv", "/raubwp", "/sachb", "/gefährdung (/staatsgefährdung)", "/schießen", "/lstvo", "/sstvo", "/smord", "/ticketv", "/vmord", "/vertuschung", "/vertuschungd", "/werkstoffe (/materialien)", "/iwerben", "/dicewp", "/wtransport", "/sgps"],, 1)
-else
 	ShowDialog(0, "sBinder: {0022FF}WP-Textbinds", "{0022FF}/anmaßung{FFFFFF}: Amtsanmaßung (15 WPs)`n{0022FF}/anschlag{FFFFFF}: Anschlag auf ein Staatsoberhaupt (61 WPs)`n{0022FF}/itätigkeit{FFFFFF}: Ausübung von besonderen Tätigkeiten ohne staatliche Genehmigung (20 WPs)`n{0022FF}/braub{FFFFFF}: Bankraub (40 WPs)`n{0022FF}/bflucht (/bhzf){FFFFFF}: Beihilfe zur Flucht (15 WPs)`n{0022FF}/bsgen{FFFFFF}: Beschädigung von Stromgeneratoren (20 WPs)`n{0022FF}/sperrgebiet (/sg){FFFFFF}: Betreten eines Sperrgebietes (40 WPs)`n{0022FF}/beleidigung{FFFFFF}: Beleidigung (10 WPs)`n{0022FF}/beamtenverweigerung (/bv){FFFFFF}: Beamtenverweigerung (5 WPs)`n{0022FF}/bvl (/blösch){FFFFFF}: Behinderung von Löscharbeiten (20 WPs)`n{0022FF}/bpassv{FFFFFF}: Beschuss während des Passverkaufes (40 WPs)`n{0022FF}/craub{FFFFFF}: Casinoraub (40 WPs)`n{0022FF}/diebstahl{FFFFFF}: Diebstahl (15 WPs)`n{0022FF}/c4dieb{FFFFFF}: Diebstahl von C4 (61 WPs)`n{0022FF}/drohung{FFFFFF}: Drohung (10 WPs)`n{0022FF}/drogen (/drogen1){FFFFFF}: Drogenbesitz (Green >= 51g, Gold >= 21g, LSD >= 1) (10 WPs)`n{0022FF}/drogen2{FFFFFF}: Drogenbesitz (Green >= 251g, Gold >= 50g, LSD >= 3) (15 WPs)`n{0022FF}/drogen3{FFFFFF}: Drogenbesitz (Green >= 501g, Gold >= 100g, LSD >= 5) (20 WPs)`n{0022FF}/drogentransport (/dtrans){FFFFFF}: Drogentransport (20 WPs)`n{0022FF}/seinbruch{FFFFFF}: Einbruch in institutionen des Staates (20 WPs)`n{0022FF}/peinbruch{FFFFFF}: Einbruch ins Alcatraz (61 WPs)`n{0022FF}/erpressg{FFFFFF}: Erpressung eines Geschäftes (10 WPs)`n{0022FF}/erschleichen{FFFFFF}: Erschleichen von Sozialleistungen (15 WPs)`n{0022FF}/irpg{FFFFFF}: Führen von illegalen Waffen (Raketenwerfer (61 WPs)`n{0022FF}/flucht{FFFFFF}: Flucht oder Fluchtversuch (15 WPs)`n{0022FF}/itüv{FFFFFF}: Führen eines Kfz mit abgelaufener/fehlender TÜV-Plakette (15 WPs)`n{0022FF}/geiselnahme{FFFFFF}: Geiselnahme (30 WPs)`n{0022FF}/ggs{FFFFFF}: Gruppierungen gegen den Staat (40 WPs)`n{0022FF}/bhack{FFFFFF}: Hacken des Banksystems (40 WPs)`n{0022FF}/ihandel{FFFFFF}: Handel mit illegalen Substanzen / Waffen (15 WPs)`n{0022FF}/hetze{FFFFFF}: Hetze gegen den Staat (20 WPs)`n{0022FF}/whetze{FFFFFF}: Hetze gegen den Staat (in Verbindung mit Waffengewalt) (40 WPs)`n{0022FF}/waffen{FFFFFF}: Illegaler Waffenbesitz (10 WPs)`n{0022FF}/isf (/ibs){FFFFFF}: Illegaler Aufenthalt (San Fierro oder Bayside) (15 WPs)`n{0022FF}/kv{FFFFFF}: Körperverletzung (15 WPs)`n{0022FF}/mord{FFFFFF}: Mord (35 WPs)`n{0022FF}/ntl{FFFFFF}: Null-Toleranz-Liste (Beschuss auf Staatsbeamte) (69 WPs)`n{0022FF}/pstörung{FFFFFF}: Prüfungsstörung (20 WPs)`n{0022FF}/psv{FFFFFF}: Parken innerhalb eines permanenten Sperrgebietes (40 WPs)`n{0022FF}/raubwp{FFFFFF}: Raub (20 WPs)`n{0022FF}/sachb{FFFFFF}: Sachbeschädigung (10 WPs)`n{0022FF}/gefährdung (/staatsgefährdung){FFFFFF}: Staatsgefährdung (61 WPs)`n{0022FF}/schießen{FFFFFF}: Schießen in der Öffentlichkeit (10 WPs)`n{0022FF}/lstvo{FFFFFF}: Leichtes StVO-Vergehen (9 WPs)`n{0022FF}/sstvo{FFFFFF}: Schweres StVO-Vergehen (10 WPs)`n{0022FF}/smord{FFFFFF}: Serienmord (40 WPs)`n{0022FF}/ticketv{FFFFFF}: Ticketverweigerung (10 WPs)`n{0022FF}/vmord{FFFFFF}: Versuchter Mord (25 WPs)`n{0022FF}/vertuschung{FFFFFF}: Vertuschung (Werkstoffe oder Mord) (15 WPs)`n{0022FF}/vertuschungd{FFFFFF}: Vertuschung (Drogen) (20 WPs)`n{0022FF}/werkstoffe (/materialien){FFFFFF}: Werkstoffe (ab 100g, Eisen) (15 WPs)`n{0022FF}/iwerben{FFFFFF}: Werben für illegale Aktivitäten (20 WPs)`n{0022FF}/dicewp{FFFFFF}: Würfeln außerhalb des Casinos (10 WPs)`n{0022FF}/wtransport{FFFFFF}: Illegaler Waffentransport (20 WPs)")
 return
 ::/anmaßung::
@@ -10482,6 +10459,7 @@ return
 Suspend Permit
 SendChat("/showbadge " GetClosestPlayerId())
 return
+
 /*
 ö::
 AddChatMessage(IsChatOpen())
