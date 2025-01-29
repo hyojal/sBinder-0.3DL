@@ -4243,7 +4243,7 @@ ShowDialog(Style, Title, Text, Button="OK", Button2="Schließen", Id=522){
 	KeyWait, Enter
 	Sleep, 200
 	if(UseAPI AND !WinActive("ahk_class AutoHotkeyGUI"))
-		return ShowDialogA(Style,Title,Text,Button, Button2,id)
+		return ShowDialogA(Style,Title,Text,Button, Button2,Id)
 		
 	else if(WinActive("ahk_class AutoHotkeyGUI"))
 		MsgBox, 64, % RegExReplace(Title, "Ui)\{[a-f\d]{6}\}"), % RegExReplace(Text, "Ui)\{[a-f\d]{6}\}")
@@ -5813,7 +5813,7 @@ TempGUI2GuiClose:
 Gui, TempGUI2:Destroy
 return
 Variables:
-Version := "2.51"
+Version := "2.52"
 Build := 84
 active := 1
 ;INIFile := A_ScriptDir "\keybinder.ini"
