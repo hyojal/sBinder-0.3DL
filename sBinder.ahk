@@ -5813,7 +5813,7 @@ TempGUI2GuiClose:
 Gui, TempGUI2:Destroy
 return
 Variables:
-Version := "2.52"
+Version := "2.53"
 Build := 84
 active := 1
 ;INIFile := A_ScriptDir "\keybinder.ini"
@@ -7548,13 +7548,13 @@ if(fishingSoundEnabled)
 {
 if(InStr(chat,"Dein Fang scheint sich") AND !InStr(chat, "sagt") AND !InStr(chat, ")") AND !InStr(chat, "*") AND !InStr(chat, "schreit") AND !InStr(chat, "flüstert"))
 {
-if(A_Now>=timer)
+if(A_TickCount>=timer)
 {
 SoundGet originalVolume
 SoundSet soundVolume
 SoundPlay, sounds\fishing.mp3, 1
 SoundSet originalVolume
-timer := A_now + 10
+timer := A_TickCount + 12000
 }
 return
 }
@@ -7604,6 +7604,36 @@ loop, % (A_IsSuspended ? 2 : 1)
 }
 return
 
+~Escape::
+Suspend Off
+Hotkey, ~NumpadEnter, Off
+Hotkey, ~Enter, Off
+Hotkey, ~Escape, Off
+Hotkey, ~LButton, Off
+return
+~t::
+~+t::
+Suspend On
+Hotkey, ~NumpadEnter, On
+Hotkey, ~Enter, On
+Hotkey, ~Escape, On
+Hotkey, ~LButton, On
+return
+~NumpadEnter::
+~Enter::
+Suspend Off
+Hotkey, ~NumpadEnter, Off
+Hotkey, ~Enter, Off
+Hotkey, ~Escape, Off
+Hotkey, ~LButton, Off
+return
+~LButton::
+Suspend Off
+Hotkey, ~NumpadEnter, Off
+Hotkey, ~Enter, Off
+Hotkey, ~Escape, Off
+Hotkey, ~LButton, Off
+return
 
 #If hmv && WinActive("ahk_group GTASA")
 ~h::
@@ -10459,7 +10489,6 @@ return
 Suspend Permit
 SendChat("/showbadge " GetClosestPlayerId())
 return
-
 /*
 ö::
 AddChatMessage(IsChatOpen())
