@@ -10691,6 +10691,25 @@ if (sperrzone != "") {
 		AddChatMessage("{DF0101}FEHLER:{FFFFFF}Es besteht keine aktive Sperrzone!")
 }
 return
+
+::/rb::
+Suspend, Permit
+SendChat("/roadblock")
+SendInput,{Enter}
+SendChat("/roadblock")
+SendInput, {Down}
+Sleep, 10
+SendInput, {Down}
+Sleep, 10
+SendInput, {Down}
+Sleep, 10
+SendInput, {Down}
+Sleep, 10
+SendInput, {Down}
+Sleep, 10
+SendInput, {Enter}
+Return
+
 /*
 ö::
 AddChatMessage(IsChatOpen())
