@@ -5813,7 +5813,7 @@ TempGUI2GuiClose:
 Gui, TempGUI2:Destroy
 return
 Variables:
-Version := "2.53"
+Version := "2.54"
 Build := 84
 active := 1
 ;INIFile := A_ScriptDir "\keybinder.ini"
@@ -7569,10 +7569,14 @@ if((GetPlayerState()==1) OR (GetPlayerState()==50))
 chatlines := GetChatLines(5)
 if((!InStr(chatlines,"Connected to German Nova") AND (!InStr(chatlines,"FMOTD:") AND (!InStr(chatlines,"SA-MP 0.3.DL-R1")))))
 {
+if(A_TickCount>=timer)
+{
 SoundGet originalVolume
 SoundSet soundVolume
 SoundPlay, sounds\damageinc.mp3, 1
 SoundSet originalVolume
+timer := A_TickCount + 1000
+}
 }
 }
 }
@@ -7583,10 +7587,14 @@ if(deathSoundEnabled)
 {
 if(InStr(chat,"NOTRUF: Da dein NovaHealth") AND !InStr(chat, "sagt") AND !InStr(chat, ")") AND !InStr(chat, "*") AND !InStr(chat, "schreit") AND !InStr(chat, "flüstert"))
 {
+if(A_TickCount>=timer)
+{
 SoundGet originalVolume
 SoundSet soundVolume
 SoundPlay, sounds\wasted.mp3, 1
 SoundSet originalVolume
+timer := A_TickCount + 10000
+}
 }
 }
 
@@ -7699,13 +7707,7 @@ GuiShow:
 Gui, 1:Show,, sBinder 0.3DL - v%Version%
 return
 
-::/reconnect::
-Suspend Permit
-Critical
-reconnected := 1
-WinClose, ahk_group GTASA,, 3
-gosub Connect
-return
+
 
 Connect:
 SetTimer, %A_ThisLabel%, Off
@@ -7914,36 +7916,6 @@ chat := WaitForChatLine(1, "Spielzeit seit Payday: [")
 RegExMatch(chat, "Spielzeit seit Payday: \[(.*) Minuten\]", chat)
 chat1 := 60 - chat1
 AddChatMessage("Du musst noch {88AA62}" chat1 " Minute" (chat1 = 1 ? "" : "n") "{FFFFFF} bis zum Payday warten.")
-return
-::/respekt::
-Suspend Permit
-SendChat("/oldstats")
-chat := WaitForChatLine(3, "Respekt:[")
-num := ChatLine(6, "Level:[")
-stat := ChatLine(5, "Status:[")
-RegExMatch(chat, "Respekt:\[(\d+)/(\d+)\]", chat)
-RegExMatch(num, "Level:\[(\d+)\] Geschlecht:\[", num)
-chat3 := chat2 - chat1
-;if(chat1 < chat2)
-AddChatMessage("Du benötigst noch {88AA62}" chat3 " Respektpunkt" (chat3 = 1 ? "" : "e") "{FFFFFF}" (InStr(stat, "Status:[Premium") ? " (ca. " (stat := Round(chat3 / 1.2)) " Payday" (stat = 1 ? "" : "s") " mit Premium)" : "") " bis {88AA62}Level " num1 + 1 "{FFFFFF}. {A6A6A6}[" chat1 "/" chat2 "]")
-;else
-;	AddChatMessage("Du kannst dir {88AA62}Level " num1 + 1 "{FFFFFF} für {88AA62}$" number_format(chat1) "{FFFFFF} kaufen. {A6A6A6}[" chat2 "/" chat3 "]")
-return
-::/kcall::
-Suspend Permit
-chat := ""
-if(!num1 := PlayerInput("Gib die Nummer, den Namen oder die ID der Person ein: "))
-	return
-if(!is(num1, "integer") OR (StrLen(num1) < 4 AND is(num1, "integer"))){
-	SendChat("/nummer " num1)
-	chat := WaitForChatLine(0, ", Ph: ")
-}
-if(InStr(chat, "Spieler nicht gefunden"))
-	return
-if(chat)
-	RegExMatch(chat, "Ph: (\d+),?", num)
-if(is(num1, "integer") AND StrLen(num1) >= 5)
-	SendChat("/call " num1)
 return
 ::/ksms::
 ::/ktzelle::
@@ -8597,119 +8569,6 @@ AddChatMessage("Die /me-Texte wurden " (meTexte ? "" : "de") "aktiviert.")
 IniWrite, %meTexte%, %INIFile%, Settings, me
 GuiControl, SettingsGUI:, meTexte, %meTexte%
 return
-::/checkfrak::
-::/checkfrak id::
-::/checkfrak wp::
-::/membersonline::
-::/membersonline id::
-::/membersonline wp::
-Suspend Permit
-num2 := leaderonline := leader := members := online := 0
-if(!num1 := PlayerInput("Gib den Namen der Fraktion ein: ")){
-	AddChatMessage("Du hast keine Fraktion eingegeben!")
-	return
-}
-if(!num2 := ArrayMatch(num1, FrakRegEx)){
-	AddChatMessage("Kein gültiger Fraktionsname!")
-	return
-}
-AddChatMessage("Daten werden geladen...")
-if(RegExMatch(data := HTTPData("http://saplayer.lima-city.de/sBinder_get.php?nl&a=members-v2&p=" num2,,, 1), "^\[\[(\d+)\]\]$", var)){
-	AddChatMessage("Du musst noch {88AA62}" var1 " Sekunden{FFFFFF} warten, bis du die Daten wieder abrufen kannst. Grund dafür ist, dass die Anfrage anderfalls aufgrund von DDOS-Verdacht gesperrt werden würde.")
-	return
-}
-FrakWebsite := Object()
-pos := 0
-while(pos := RegExMatch(data, "Um`a)^(.+);(\d+);(\d+);(\d*);(\d*);$", chat, pos+1)){
-	FrakWebsite[A_Index] := [chat1, chat2, chat3, chat4, chat5] ;Name, Level, Rang, online/offline, Leader
-	if(chat4)
-		online ++
-	if(chat5){
-		if(chat4)
-			leaderonline ++
-		leader ++
-	}
-	members ++
-}
-FrakWebsite := ArrayReverse(ArrayMultiSort(ArrayMultiSort(ArrayMultiSort(FrakWebsite, 2), 3), 5))
-if(!RegExMatch(data, "U)^\[(.+)\]", data))
-	AddChatMessage("Fehler beim Download")
-else if(!members)
-	AddChatMessage("Die Fraktion {88AA62}" data1 "{FFFFFF} hat keine Mitglieder")
-else if(!online)
-	AddChatMessage("0/" members " der Fraktion {88AA62}" data1 "{FFFFFF} online.")
-else{
-	AddChatMessage(online "/" members " der Fraktion {88AA62}" data1 "{FFFFFF} online (" RoundEx(online/members*100) " Prozent), davon " leaderonline "/" leader " Leader:")
-	for i, k in FrakWebsite
-	{
-		if(k[4]){
-			if(SubStr(A_ThisLabel, -2) = " id")
-				SendChat("/id " k[1])
-			else if(SubStr(A_ThisLabel, -2) = " wp")
-				SendChat("/checkwanted " k[1])
-			else
-				AddChatMessage((k[5] ? "{00AA00}Leader:{FFFFFF} " : "") k[1] " [Rang " k[3] "; Level " k[2] "]")
-		}
-	}
-}
-FrakWebsite := ""
-return
-::/myfrak::
-Suspend Permit
-num2 := leaderonline := leader := members := online := 0
-if(!num2 := FrakNums[Frak])
-	return
-AddChatMessage("Daten werden geladen...")
-if(RegExMatch(data := HTTPData("http://saplayer.lima-city.de/sBinder_get.php?nl&a=members-v2&p=" num2,,, 1), "^\[\[(\d+)\]\]$", var)){
-	AddChatMessage("Du musst noch {88AA62}" var1 " Sekunden{FFFFFF} warten, bis du die Daten wieder abrufen kannst. Grund dafür ist, dass die Anfrage anderfalls aufgrund von DDOS-Verdacht gesperrt werden würde.")
-	return
-}
-FrakWebsite := Object()
-pos := 0
-while(pos := RegExMatch(data, "Um`a)^(.+);(\d+);(\d+);(\d*);(\d*);$", chat, pos+1)){
-	FrakWebsite[A_Index] := [chat1, chat2, chat3, chat4, chat5] ;Name, Level, Rang, online/offline, Leader
-	if(chat4)
-		online ++
-	if(chat5){
-		if(chat4)
-			leaderonline ++
-		leader ++
-	}
-	members ++
-}
-FrakWebsite := ArrayReverse(ArrayMultiSort(ArrayMultiSort(ArrayMultiSort(FrakWebsite, 2), 3), 5))
-if(!RegExMatch(data, "U)^\[(.+)\]", data))
-	AddChatMessage("Fehler beim Download")
-else{
-	for i, k in FrakWebsite
-	{
-		if(k[4])
-			SendChat("/id " k[1])
-	}
-	WaitFor()
-	Sleep, 50
-	active := online
-	leaderactive := leaderonline
-	i2 := 0
-	for i, k in FrakWebsite
-	{
-		if(k[4])
-		{
-			chat := ChatLine(online - i2 - 1, ") " k[1] " Level: ")
-			if (InStr(chat, "| AFK-Modus.") || InStr(chat, "| User ist tot.") || InStr(chat, "| User ist im Gefängnis."))
-			{
-				active--
-				if(k[5])
-					leaderactive--
-			}
-			i2++
-		}
-	}
-	AddChatMessage("Members online: " online "/" members " (" leaderonline "/" leader " Leader)")
-	AddChatMessage("Davon ingame anwesend: " active "/" online " (" leaderactive "/" leaderonline " Leader)")
-}
-FrakWebsite := ""
-return
 ::/chatlogbackup::
 Suspend Permit
 FileCreateDir, ChatlogBackups
@@ -8773,55 +8632,6 @@ else{
 	}
 }
 FrakWebsite := ""
-return
-::/playerinfo::
-Suspend Permit
-if((id := PlayerInput("Gib Name, ID oder Nummer des Spielers ein: ")) = ""){
-	AddChatMessage("Du hast nichts eingegeben...")
-	return
-}
-chat := chat1 := 0
-if(is(id, "integer") AND (between(StrLen(id), 1, 3))){
-	if(is(id := GetPlayerNameById(id), "integer")){
-		AddChatMessage("Kein Spieler mit der ID " id " gefunden!")
-		return
-	}
-}
-if(SubStr(id, -5, 6) = "_[AFK]")
-	id := SubStr(id, 1, -6)
-AddChatMessage("Spielerdaten werden geladen...")
-if((data := HTTPData("http://saplayer.lima-city.de/sBinder_get.php?nl&a=player-v2.3&p=" URLEncode(id), "")) = -1){
-	AddChatMessage("Kein Spieler mit " (is(id, "integer") ? "der Nummer" : "dem Namen") " {88AA62}" id "{FFFFFF} gefunden")
-	return
-}
-if(RegExMatch(data, "^\[\[(\d+)\]\]$", var)){
-	AddChatMessage("Du musst noch {88AA62}" var1 " Sekunden{FFFFFF} warten, bis du die Daten wieder abrufen kannst. Grund dafür ist, dass die Anfrage anderfalls aufgrund von DDOS-Verdacht gesperrt werden würde.")
-	return
-}
-if(RegExMatch(data, "U)^(.+);(\d);(\d+);(\d+);(\d{5,6});(.+);(\d{1,2});(\d+)(;.+)?(\|.+)?(#.+)?$", data)){ ;Name, online/offline, Level, Alter, Tel.nummer, Frak + Rang + Leader, Achievements, Achievements insg., Ehepartner (mit ;), Adminrang (mit |), Frühere Namen (mit #)
-	if(!RegExMatch(data6, "^(.+)\[(.+);(\d)\]$", num))
-		num1 := data6
-	if(data4 = 0)
-		data4 := "Unbekannt"
-	AddChatMessage("--- [sBinder] Spieler-Informationen ---")
-	AddChatMessage("Name: {88AA62}" data1 "{FFFFFF} -- Status: " (data2 ? "{00AA00}on" : "{FF1100}off") "line{FFFFFF} -- Level: " data3)
-	AddChatMessage("Alter: " data4 " -- Fraktion: " num1 (InStr(data6, "[") ? " (Rang " num2 (num3 ? ", Leader" : "") ")" : ""))
-	AddChatMessage("Handynummer: " data5 " -- Achievements: " data7 "/" data8 " (" RoundEx(data7/data8*100) " Prozent)")
-	if(data9)
-		AddChatMessage("Verheiratet mit {E809B4}" SubStr(data9, 2))
-	if(data10)
-		AddChatMessage("Adminrang: {DDDD00}" SubStr(data10, 2))
-	if(data11)
-		AddChatMessage((InStr(data11, ",") ? "Frühere Namen: " : "Früherer Name: ") SubStr(data11, 2))
-	if(data2)
-		SendChat("/id " data1)
-}
-else{
-	AddChatMessage("Fehler beim Download" (StrLen(id) > 3 AND is(id, "number") ? ". Eventuell hast du eine falsche Nummer eingegeben." : ""))
-	if(StrLen(id) > 3 AND is(id, "number"))
-		AddChatMessage("Überprüfe die Nummer {88AA62}" id)
-}
-data := ""
 return
 ::/setjob::
 Suspend Permit
@@ -8929,75 +8739,8 @@ else
 AddChatMessage("Fraktionsbinds für {88AA62}" (IsFrak(Frak) ? Fraknames[Frak] : "Fehler") ": " (Frak = 1 ? "{FF1100}nicht vorhanden" : frakbinds ? "{00AA00}aktiv{FFFFFF} (" fBinds_used "/" fBinds " belegt)" : "{FF1100}nicht aktiv"))
 AddChatMessage("Job: " (Job = 1 ? "{FF1100}" : "{88AA62}") Jobnames[Job])
 return
-::/frakall::
-Suspend Permit
-members := online := fraks := 0
-AddChatMessage("Daten werden geladen...")
-if(RegExMatch(data := HTTPData("http://saplayer.lima-city.de/sBinder_get.php?nl&a=fraks",,, 1), "^\[\[(\d+)\]\]$", var)){
-	AddChatMessage("Du musst noch {88AA62}" var1 " Sekunden{FFFFFF} warten, bis du die Daten wieder abrufen kannst. Grund dafür ist, dass die Anfrage anderfalls aufgrund von DDOS-Verdacht gesperrt werden würde.")
-	return
-}
-FrakWebsite := Object()
-pos := 0
-while(pos := RegExMatch(data, "Um`a)^(.+):(\d+)/(\d+)$", chat, pos+1)){
-	FrakWebsite[A_Index] := [chat1, chat2, chat3]
-	online += chat2
-	members += chat3
-	fraks ++
-}
-FrakWebsite := ArrayMultiSort(ArrayMultiSort(FrakWebsite, 3), 2)
-if(!FrakWebsite._maxIndex())
-	AddChatMessage("Fehler beim Download")
-else{
-	AddChatMessage(online "/" members " Mitglieder von " fraks " Fraktionen online:")
-	for i, k in FrakWebsite
-	{
-		AddChatMessage(k[1] ": {88AA62}" k[2] "/" k[3] "{FFFFFF} (" RoundEx(k[2]/k[3] * 100) " Prozent)")
-	}
-}
-FrakWebsite := ""
-return
-::/membersall::
-Suspend Permit
-num2 := leaderonline := leader := members := online := 0
-if(!num1 := PlayerInput("Gib den Namen der Fraktion ein: ")){
-	AddChatMessage("Du hast keine Fraktion eingegeben!")
-	return
-}
-if(!num2 := ArrayMatch(num1, FrakRegEx)){
-	AddChatMessage("Kein gültiger Fraktionsname!")
-	return
-}
-AddChatMessage("Daten werden geladen...")
-if(RegExMatch(data := HTTPData("http://saplayer.lima-city.de/sBinder_get.php?nl&a=members-v2&p=" num2,,, 1), "^\[\[(\d+)\]\]$", var)){
-	AddChatMessage("Du musst noch {88AA62}" var1 " Sekunden{FFFFFF} warten, bis du die Daten wieder abrufen kannst. Grund dafür ist, dass die Anfrage anderfalls aufgrund von DDOS-Verdacht gesperrt werden würde.")
-	return
-}
-FrakWebsite := Object()
-pos := 0
-while(pos := RegExMatch(data, "Um`a)^(.+);(\d+);(\d+);(\d*);(\d*);$", chat, pos+1)){
-	FrakWebsite[A_Index] := [chat1, chat2, chat3, chat4, chat5] ;Name, Level, Rang, online/offline, Leader
-	if(chat4)
-		online ++
-	if(chat5){
-		if(chat4)
-			leaderonline ++
-		leader ++
-	}
-	members ++
-}
-FrakWebsite := ArrayReverse(ArrayMultiSort(ArrayMultiSort(ArrayMultiSort(FrakWebsite, 2), 3), 5))
-if(!RegExMatch(data, "U)^\[(.+)\]", data))
-	AddChatMessage("Fehler beim Download")
-else if(!members)
-	AddChatMessage("Die Fraktion {88AA62}" data1 "{FFFFFF} hat keine Mitglieder")
-else{
-	for i, k in FrakWebsite
-		AddChatMessage(k[1] "{FFFFFF} [Rang " k[3] "; Level " k[2] (k[5] ? "; Leader" : "") "]" (k[4] ? ": online" : ""), k[4] ? 0x00AA00 : 0xFF1100)
-	AddChatMessage(online "/" members " der Fraktion {88AA62}" data1 "{FFFFFF} online (" RoundEx(online/members*100) " Prozent), davon " leaderonline "/" leader " Leader.")
-}
-FrakWebsite := ""
-return
+
+
 ::/carvalue::
 Suspend Permit
 SendChat("/vehinfo")
