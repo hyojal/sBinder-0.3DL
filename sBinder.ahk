@@ -10674,9 +10674,9 @@ return
 Suspend Permit
 sperrzone := GetPlayerZone()
 if (sperrzone != "") {
-	SendChat("/gov Das Gebiet " GetPlayerZone() "  gilt nun ab sofort als Sperrgebiet.")
+	SendChat(" Das Gebiet " GetPlayerZone() "  gilt nun ab sofort als Sperrgebiet.")
 	Sleep, 100
-	SendChat("/gov Jeglicher unautorisierter Aufenthalt in dieser Zone wird geahndet.")
+	SendChat("Jeglicher unautorisierter Aufenthalt in dieser Zone wird geahndet.")
 	} else {
 		AddChatMessage("{DF0101}FEHLER:{FFFFFF}Die Zone konnte nicht ermittelt werden.")
 }
@@ -10685,7 +10685,7 @@ return
 ::/offsperrzone::
 Suspend Permit
 if (sperrzone != "") {
-	SendChat("/gov Das Gebiet " %sperrzone% " ist nun wieder freigegeben.")
+	SendChat("Das Gebiet " %sperrzone% " ist nun wieder freigegeben.")
 	sperrzone := ""
 	} else {
 		AddChatMessage("{DF0101}FEHLER:{FFFFFF}Es besteht keine aktive Sperrzone!")
