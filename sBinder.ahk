@@ -10695,18 +10695,24 @@ return
 ::/rb::
 Suspend, Permit
 SendChat("/roadblock")
+Sleep, 50
 SendInput,{Enter}
+Sleep, 3000
 SendChat("/roadblock")
 SendInput, {Down}
-Sleep, 10
+Sleep, 50
 SendInput, {Down}
-Sleep, 10
+Sleep, 50
 SendInput, {Down}
-Sleep, 10
+Sleep, 50
 SendInput, {Down}
-Sleep, 10
+Sleep, 50
 SendInput, {Down}
-Sleep, 10
+Sleep, 50
+SendInput, {Down}
+Sleep, 50
+SendInput, {Down}
+Sleep, 50
 SendInput, {Enter}
 Return
 
