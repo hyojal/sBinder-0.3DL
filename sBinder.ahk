@@ -4130,7 +4130,7 @@ if(UseAPI){
 	}
 }
 */
-
+global ftimer, dtimer
 
 IniWrite, % 1, %INIFile%, Settings, UseAPI
 data := HTTPData("https://api.github.com/repos/hyojal/sBinder-0.3DL/tags")
@@ -4141,7 +4141,6 @@ global gitVersion := subStr(data,11,4)
 
 if(InStr(data,"API rate limit exceeded") OR !InStr(subStr(data,11,3),"."))
 gitVersion := 0 
-
 IfNotExist, sounds
 FileCreateDir , sounds
 global soundVolume
@@ -4158,6 +4157,7 @@ IniRead, deathSoundEnabled, %INIFile%, Sounds, Deathsound , 0
 IniRead, fishingSoundEnabled, %INIFile%, Sounds, Fishingsound , 0
 IniRead, damageSoundEnabled, %INIFile%, Sounds, Damagesound , 0
 IniRead, soundVolume, %INIFile%, Sounds, SoundVolume , 50
+
 AddChatMessage(Text, color=0xFF6600, nosplit=0, indent=0){
 	global UseAPI, AddChatMessage_func
 	max_len := UseAPI ? 130 : 123
@@ -5813,7 +5813,7 @@ TempGUI2GuiClose:
 Gui, TempGUI2:Destroy
 return
 Variables:
-Version := "2.54"
+Version := "2.55"
 Build := 84
 active := 1
 ;INIFile := A_ScriptDir "\keybinder.ini"
@@ -7598,7 +7598,39 @@ timer := A_TickCount + 10000
 }
 }
 
+if(dtimer<=A_TickCount)
+{
+chatlines := GetChatLines(6)
+if((inStr(chatlines, "Du bist nun auf dem Friedhof")) AND (GetPlayerZone()=="Vinewood"))
+{
+if(ftimer<A_TickCount)
+{
+SendChat("/friedhof")
+ftimer := A_TickCount + 30000
+}
+chatline := WaitForChatLine(0,"Du bist noch ca.")
+RegExMatch(chat, "ca. (.*) Sekunden", chat)	
+dtimer := chat1 * 1000 + A_TickCount
+}
+}
+else
+{
+if((ftimer<A_TickCount) AND (dtimer>A_TickCount))
+{
+if(GetPlayerZone()!="Vinewood")
+{
+dtimer := 0
+}
+else
+{
+SendChat("/friedhof")
+ftimer := A_TickCount + 30000
+}
+}
+}
+
 return
+
 ::/kstop::
 Del::
 Suspend
@@ -7916,6 +7948,22 @@ chat := WaitForChatLine(1, "Spielzeit seit Payday: [")
 RegExMatch(chat, "Spielzeit seit Payday: \[(.*) Minuten\]", chat)
 chat1 := 60 - chat1
 AddChatMessage("Du musst noch {88AA62}" chat1 " Minute" (chat1 = 1 ? "" : "n") "{FFFFFF} bis zum Payday warten.")
+return
+::/kcall::
+Suspend Permit
+chat := ""
+if(!num1 := PlayerInput("Gib die Nummer, den Namen oder die ID der Person ein: "))
+	return
+if(!is(num1, "integer") OR (StrLen(num1) < 4 AND is(num1, "integer"))){
+	SendChat("/nummer " num1)
+	chat := WaitForChatLine(0, ", Ph: ")
+}
+if(InStr(chat, "Spieler nicht gefunden"))
+	return
+if(chat)
+	RegExMatch(chat, "Ph: (\d+),?", num)
+if(is(num1, "integer") AND StrLen(num1) >= 5)
+	SendChat("/call " num1)
 return
 ::/ksms::
 ::/ktzelle::
@@ -10232,6 +10280,45 @@ return
 Suspend Permit
 SendChat("/showbadge " GetClosestPlayerId())
 return
+::/sperrzone::
+Suspend Permit
+sperrzone := GetPlayerZone()
+if (sperrzone != "") {
+	SendChat("/gov Das Gebiet " GetPlayerZone() " gilt nun ab sofort als Sperrgebiet.")
+	Sleep, 100
+	SendChat("/gov Jeglicher unautorisierter Aufenthalt in dieser Zone wird geahndet.")
+	} else {
+		AddChatMessage("{DF0101}FEHLER:{FFFFFF}Die Zone konnte nicht ermittelt werden.")
+}
+return
+
+::/offsperrzone::
+Suspend Permit
+if (sperrzone != "") {
+	SendChat("/gov Das Gebiet " %sperrzone% " ist nun wieder freigegeben.")
+	sperrzone := ""
+	} else {
+		AddChatMessage("{DF0101}FEHLER:{FFFFFF}Es besteht keine aktive Sperrzone!")
+}
+return
+
+::/rb::
+Suspend, Permit
+SendChat("/roadblock")
+SendInput,{Enter}
+SendChat("/roadblock")
+SendInput, {Down}
+Sleep, 10
+SendInput, {Down}
+Sleep, 10
+SendInput, {Down}
+Sleep, 10
+SendInput, {Down}
+Sleep, 10
+SendInput, {Down}
+Sleep, 10
+SendInput, {Enter}
+Return
 /*
 ö::
 AddChatMessage(IsChatOpen())
