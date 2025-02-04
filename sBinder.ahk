@@ -10303,7 +10303,7 @@ if (sperrzone != "") {
 return
 
 ::/rb::
-Suspend, Permit
+Suspend Permit
 SendChat("/roadblock")
 SendInput,{Enter}
 SendChat("/roadblock")
