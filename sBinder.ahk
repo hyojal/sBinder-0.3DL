@@ -10801,6 +10801,22 @@ Sleep, 50
 SendChat("/id " %sperrplayer% "")
 AddChatMessage("{fcf003}S-BINDER: {FFFFFF}Hat der Spieler {fcf003}" %sperrplayer% " {fcf003}das Sperrgebiet verlassen ? Falls nicht -> /sg")
 return
+
+::/cd::
+Suspend Permit
+SendChat("/s >>> 5 <<<")
+sleep 1000
+SendChat("/s >>> 4 <<<")
+sleep 1000
+SendChat("/s >>> 3 <<<")
+sleep 1000
+SendChat("/s >>> 2 <<<")
+sleep 1000
+SendChat("/s >>> 1 <<<")
+sleep 1000
+SendChat("/s >>> GO <<<")
+return
+
 /*
 ö::
 AddChatMessage(IsChatOpen())
