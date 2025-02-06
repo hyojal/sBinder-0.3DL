@@ -57,7 +57,7 @@ global ADDR_VEHICLE_Y               := 0x48          ;Vehicle Speed Y
 global ADDR_VEHICLE_Z               := 0x4C          ;Vehicle Speed Z
 global oAirplaneModels := [417, 425, 447, 460, 469, 476, 487, 488, 497, 511, 512, 513, 519, 520, 548, 553, 563, 577, 592, 593]
 global oBikeModels := [481,509,510]
-global ovehicleNames := ["Landstalker","Bravura","Buffalo","Linerunner","Perrenial","Sentinel","Dumper","Firetruck","Trashmaster","Stretch","Manana","Infernus","Voodoo","Pony","Mule","Cheetah","Ambulance","Leviathan","Moonbeam","Esperanto","Taxi","Washington","Bobcat","Whoopee","BFInjection","Hunter","Premier","Enforcer","Securicar","Banshee","Predator","Bus","Rhino","Barracks","Hotknife","Trailer","Previon","Coach","Cabbie","Stallion","Rumpo","RCBandit","Romero","Packer","Monster","Admiral","Squalo","Seasparrow","Pizzaboy","Tram","Trailer","Turismo","Speeder","Reefer","Tropic","Flatbed","Yankee","Caddy","Solair","Berkley'sRCVan","Skimmer","PCJ-600","Faggio","Freeway","RCBaron","RCRaider","Glendale","Oceanic","Sanchez","Sparrow","Patriot","Quad","Coastguard","Dinghy","Hermes","Sabre","Rustler","ZR-350","Walton","Regina","Comet","BMX","Burrito","Camper","Marquis","Baggage","Dozer","Maverick","NewsChopper","Rancher","FBIRancher","Virgo","Greenwood","Jetmax","Hotring","Sandking","BlistaCompact","Polizei Maverick","Boxvillde","Benson","Mesa","RCGoblin","HotringRacerA","HotringRacerB","BloodringBanger","Rancher","SuperGT","Elegant","Journey","Bike","MountainBike","Beagle","Cropduster","Stunt","Tanker","Roadtrain","Nebula","Majestic","Buccaneer","Shamal","Hydra","FCR-900","NRG-500","HPV1000","CementTruck","TowTruck","Fortune","Cadrona","FBITruck","Willard","Forklift","Tractor","Combine","Feltzer","Remington","Slamvan","Blade","Freight","Streak","Vortex","Vincent","Bullet","Clover","Sadler","Firetruck","Hustler","Intruder","Primo","Cargobob","Tampa","Sunrise","Merit","Utility","Nevada","Yosemite","Windsor","Monster","Monster","Uranus","Jester","Sultan","Stratum","Elegy","Raindance","RCTiger","Flash","Tahoma","Savanna","Bandito","FreightFlat","StreakCarriage","Kart","Mower","Dune","Sweeper","Broadway","Tornado","AT-400","DFT-30","Huntley","Stafford","BF-400","NewsVan","Tug","Trailer","Emperor","Wayfarer","Euros","Hotdog","Club","FreightBox","Trailer","Andromada","Dodo","RCCam","Launch","LS-Streifenwagen","SF-Streifenwagen","LV-Streifenwagen","Polizei Ranger","Picador","S.W.A.T","Alpha","Phoenix","GlendaleShit","SadlerShit","Luggage","Luggage","Stairs","Boxville","Tiller","UtilityTrailer"]
+global ovehicleNames := ["Landstalker","Bravura","Buffalo","Linerunner","Perrenial","Sentinel","Dumper","Firetruck","Trashmaster","Stretch","Manana","Infernus","Voodoo","Pony","Mule","Cheetah","Ambulance","Leviathan","Moonbeam","Esperanto","Taxi","Washington","Bobcat","Whoopee","BFInjection","Hunter","Premier","Enforcer","Securicar","Banshee","Predator","Bus","Rhino","Barracks","Hotknife","Trailer","Previon","Coach","Cabbie","Stallion","Rumpo","RCBandit","Romero","Packer","Monster","Admiral","Squalo","Seasparrow","Pizzaboy","Tram","Trailer","Turismo","Speeder","Reefer","Tropic","Flatbed","Yankee","Caddy","Solair","Berkley'sRCVan","Skimmer","PCJ-600","Faggio","Freeway","RCBaron","RCRaider","Glendale","Oceanic","Sanchez","Sparrow","Patriot","Quad","Coastguard","Dinghy","Hermes","Sabre","Rustler","ZR-350","Walton","Regina","Comet","BMX","Burrito","Camper","Marquis","Baggage","Dozer","Maverick","NewsChopper","Rancher","FBIRancher","Virgo","Greenwood","Jetmax","Hotring","Sandking","BlistaCompact","Polizei Maverick","Boxvillde","Benson","Mesa","RCGoblin","HotringRacerA","HotringRacerB","BloodringBanger","Rancher","SuperGT","Elegant","Journey","Bike","MountainBike","Beagle","Cropduster","Stunt","Tanker","Roadtrain","Nebula","Majestic","Buccaneer","Shamal","Hydra","FCR-900","NRG-500","HPV1000","Zement Truck","Abschleppwagen","Fortune","Cadrona","FBI Truck","Willard","Gabelstapler","Traktor","Combine","Feltzer","Remington","Slamvan","Blade","Freight","Streak","Vortex","Vincent","Bullet","Clover","Sadler","Firetruck","Hustler","Intruder","Primo","Cargobob","Tampa","Sunrise","Merit","Utility","Nevada","Yosemite","Windsor","Monster","Monster","Uranus","Jester","Sultan","Stratum","Elegy","Raindance","RCTiger","Flash","Tahoma","Savanna","Bandito","FreightFlat","StreakCarriage","Kart","Mower","Dune","Sweeper","Broadway","Tornado","AT-400","DFT-30","Huntley","Stafford","BF-400","NewsVan","Tug","Trailer","Emperor","Wayfarer","Euros","Hotdog","Club","FreightBox","Trailer","Andromada","Dodo","RCCam","Launch","LS-Streifenwagen","SF-Streifenwagen","LV-Streifenwagen","Polizei Ranger","Picador","S.W.A.T","Alpha","Phoenix","GlendaleShit","SadlerShit","Luggage","Luggage","Stairs","Boxville","Tiller","UtilityTrailer"]
 global oweaponNames := ["Fist","Brass Knuckles","Golf Club","Nightstick","Knife","Baseball Bat","Shovel","Pool Cue","Katana","Chainsaw","Purple Dildo","Dildo","Vibrator","Silver Vibrator","Flowers","Cane","Grenade","Tear Gas","Molotov Cocktail", "", "", "", "9mm","Silenced 9mm","Desert Eagle","Shotgun","Sawnoff Shotgun","Combat Shotgun","Micro SMG/Uzi","MP5","AK-47","M4","Tec-9","Country Rifle","Sniper Rifle","RPG","HS Rocket","Flamethrower","Minigun","Satchel Charge","Detonator","Spraycan","Fire Extinguisher","Camera","Night Vis Goggles","Thermal Goggles","Parachute"]
 global oradiostationNames := ["Playback FM", "K Rose", "K-DST", "Bounce FM", "SF-UR", "Radio Los Santos", "Radio X", "CSR 103.9", "K-JAH West", "Master Sounds 98.3", "WCTR Talk Radio", "User Track Player", "Radio Off"]
 global oweatherNames := ["EXTRASUNNY_LA", "SUNNY_LA", "EXTRASUNNY_SMOG_LA", "SUNNY_SMOG_LA", "CLOUDY_LA", "SUNNY_SF", "EXTRASUNNY_SF", "CLOUDY_SF", "RAINY_SF", "FOGGY_SF", "SUNNY_VEGAS", "EXTRASUNNY_VEGAS", "CLOUDY_VEGAS", "EXTRASUNNY_COUNTRYSIDE", "SUNNY_COUNTRYSIDE", "CLOUDY_COUNTRYSIDE", "RAINY_COUNTRYSIDE", "EXTRASUNNY_DESERT", "SUNNY_DESERT", "SANDSTORM_DESERT", "UNDERWATER", "EXTRACOLOURS_1", "EXTRACOLOURS_2"]
@@ -4130,8 +4130,9 @@ if(UseAPI){
 	}
 }
 */
-
-
+global ftimer, dtimer, fTimerEnabled, lastKillTime, killBind
+IniRead, killBind, %INIFile%, Settings, Killbinder
+IniRead, fTimerEnabled, %INIFile%, Settings, FriedhofTimer, 1
 IniWrite, % 1, %INIFile%, Settings, UseAPI
 data := HTTPData("https://api.github.com/repos/hyojal/sBinder-0.3DL/tags")
 if !RegExMatch(subStr(data,14,1),"[0-9]+")
@@ -4141,7 +4142,6 @@ global gitVersion := subStr(data,11,4)
 
 if(InStr(data,"API rate limit exceeded") OR !InStr(subStr(data,11,3),"."))
 gitVersion := 0 
-
 IfNotExist, sounds
 FileCreateDir , sounds
 global soundVolume
@@ -4158,6 +4158,7 @@ IniRead, deathSoundEnabled, %INIFile%, Sounds, Deathsound , 0
 IniRead, fishingSoundEnabled, %INIFile%, Sounds, Fishingsound , 0
 IniRead, damageSoundEnabled, %INIFile%, Sounds, Damagesound , 0
 IniRead, soundVolume, %INIFile%, Sounds, SoundVolume , 50
+
 AddChatMessage(Text, color=0xFF6600, nosplit=0, indent=0){
 	global UseAPI, AddChatMessage_func
 	max_len := UseAPI ? 130 : 123
@@ -5813,7 +5814,7 @@ TempGUI2GuiClose:
 Gui, TempGUI2:Destroy
 return
 Variables:
-Version := "2.54"
+Version := "2.56"
 Build := 84
 active := 1
 ;INIFile := A_ScriptDir "\keybinder.ini"
@@ -7526,22 +7527,23 @@ if(!UseAPI){
 	SetTimer, Overlay, Off
 	return
 }
-GetChatLine(0, chat)
-if(InStr(chat,"SERVER: Du hast gerade einen Mord begangen. Achtung!") AND !InStr(chat, "sagt") AND !InStr(chat, ")") AND !InStr(chat, "*") AND !InStr(chat, "schreit") AND !InStr(chat, "flüstert")){
-IniRead, message, %INIFile%, Settings, Killbinder
-if((message!="") AND (message!="ERROR"))
+GetChatLine(0, chat,1)
+if(InStr(chat,"SERVER: Du hast gerade einen Mord begangen. Achtung!")AND !InStr(chat, "sagt") AND !InStr(chat, ")") AND !InStr(chat, "*") AND !InStr(chat, "schreit") AND !InStr(chat, "flüstert"))
+{
+if((killBind!="") AND (killBind!="ERROR"))
 {
 BindReplace(message)
-Sleep, 100
 }
-else if(killSoundEnabled)
-AddChatMessage("Kill Sound abgespielt")
 if(killSoundEnabled)
 {
+if(subStr(chat, 1, 10)!=lastKillTime)
+{
+lastKillTime := subStr(chat, 1, 10)
 SoundGet originalVolume
 SoundSet soundVolume
 SoundPlay, sounds\kill.mp3, 1
 SoundSet originalVolume
+}
 }
 }
 if(fishingSoundEnabled)
@@ -7593,12 +7595,45 @@ SoundGet originalVolume
 SoundSet soundVolume
 SoundPlay, sounds\wasted.mp3, 1
 SoundSet originalVolume
-timer := A_TickCount + 10000
+timer := A_TickCount + 8000
 }
 }
 }
-
+if((fTimerEnabled) AND (GetPlayerSkinId()==162))
+{
+if(dtimer<=A_TickCount)
+{
+chatlines := GetChatLines(6)
+if((inStr(chatlines, "Du bist nun auf dem Friedhof")))
+{
+if(ftimer<A_TickCount)
+{
+SendChat("/friedhof")
+ftimer := A_TickCount + 30000
+}
+chatline := WaitForChatLine(0,"Du bist noch ca.")
+RegExMatch(chat, "ca. (.*) Sekunden", chat)	
+dtimer := chat1 * 1000 + A_TickCount
+}
+}
+else
+{
+if((ftimer<A_TickCount) AND (dtimer>A_TickCount))
+{
+if(GetPlayerSkinId()!=162)
+{
+dtimer := 0
+}
+else
+{
+SendChat("/friedhof")
+ftimer := A_TickCount + 30000
+}
+}
+}
+}
 return
+
 ::/kstop::
 Del::
 Suspend
@@ -7847,13 +7882,11 @@ AddChatMessage("Ping google.com (Referenz): {88AA62}" clearping("google.com", 40
 return
 ::/kdonut::
 Suspend Permit
+maxDonuts := PlayerInput("Gib die maximale Kapazität ein: ")
 SendChat("/oldstats")
 chat := WaitForChatLine(3, "Donuts: [")
 RegExMatch(chat, "Donuts: \[(.*)\]", chat)
-if(chat1 < 20)
-	SendChat("/get donut " 20 - chat1)
-else if(chat1 = 20)
-	AddChatMessage("Du hast bereits 20 Donuts!")
+SendChat("/get donut " maxDonuts - chat1)
 return
 ::/kame::
 Suspend Permit
@@ -7916,6 +7949,22 @@ chat := WaitForChatLine(1, "Spielzeit seit Payday: [")
 RegExMatch(chat, "Spielzeit seit Payday: \[(.*) Minuten\]", chat)
 chat1 := 60 - chat1
 AddChatMessage("Du musst noch {88AA62}" chat1 " Minute" (chat1 = 1 ? "" : "n") "{FFFFFF} bis zum Payday warten.")
+return
+::/kcall::
+Suspend Permit
+chat := ""
+if(!num1 := PlayerInput("Gib die Nummer, den Namen oder die ID der Person ein: "))
+	return
+if(!is(num1, "integer") OR (StrLen(num1) < 4 AND is(num1, "integer"))){
+	SendChat("/nummer " num1)
+	chat := WaitForChatLine(0, ", Ph: ")
+}
+if(InStr(chat, "Spieler nicht gefunden"))
+	return
+if(chat)
+	RegExMatch(chat, "Ph: (\d+),?", num)
+if(is(num1, "integer") AND StrLen(num1) >= 5)
+	SendChat("/call " num1)
 return
 ::/ksms::
 ::/ktzelle::
@@ -8214,7 +8263,7 @@ if(A_ThisLabel = "::/textbinds")
 	AddChatMessage("Die speziellen Textbinds siehst du mit {88AA62}/kcmd{FFFFFF}!")
 else{
 	RegExMatch(A_ThisLabel, "::/textbinds (\d)", chat)
-	if(UseAPI AND ShowDialogWorking){
+	if(UseAPI){
 		helptexts := ["Zuerst werdet ihr nach der Nummer (1-8) der zu bearbeitenden Notiz gefragt.`nNach der Eingabe dieser wird euch der aktuelle Inhalt der Notiz in der Chatleiste angezeigt, ihr könnt ihn durch ganz normales Schreiben ändern."
 	, "Mit diesem Befehl könnt ihr eine einfach Rechnung rechnen lassen. Unterstützt werden die Operatoren {999999}+ - * / ^{FFFFFF}.`nAuch Punkt-vor-Strich und Klammern werden beachtet. Allerdings ist das System noch in der Beta-Phase, es kann also zu Fehlern beim Ergebnis kommen."
 	, "Dieser Befehl ermöglicht es dir, dein n-tes Fahrzeug auf- bzw. abzuschließen. So schließt /car lock 2 z.B. das Fahrzeug auf oder ab, das als zweites im /car lock-Dialog aufgeführt wird."
@@ -8223,11 +8272,11 @@ else{
 	, "Sendet einige leere Zeilen in den Chat, sodass dieser leer erscheint."
 	, "Bei der Eingabe dieses Befehls werdet ihr gefragt, in welchen Chat der Countdown gestartet werden soll (z.B. /s, /r, /d, /news, /f, ...).`nDann wird ein Countdown in diesen Chat gestartet. Ihr könnt den Countdown mit Entf abbrechen."
 	, "Gibt die ungefähre aktuelle Prozessorauslastung aus. Außerdem wird euch die RAM-Auslastung angezeigt."
-	, "Dieser Textbind zeigt dir die Mitgliederzahlen - online und gesamt - aller Fraktionen auf Nova an."
+	, "(entfernt)Dieser Textbind zeigt dir die Mitgliederzahlen - online und gesamt - aller Fraktionen auf Nova an."
 	, "Mit diesem Textbind wird deine gesamte Hauskasse entleert."
 	, "Es wird ein Ping-Test durchgeführt, um zu erkennen, ob Internetprobleme serverseitig oder von eurem PC ausgehen."
 	, "Nach der Eingabe dieses Befehls werdet ihr nach einem Text gefragt, dieser wird dann als /ame-Text über eurem Kopf angezeigt und`nalle 15 Sekunden aktualisiert. Der Befehl ist mit /kcancel abbrechbar.`nDu kannst auch {999999}/kame multi{FFFFFF} nutzen, um mehrere /ame-Texte als Lauftext (wird alle 3 Sekunden gewechselt) anzuzeigen."
-	, "Mit diesem Befehl wird der /id-Befehl für alle BLer (/bl) angezeigt. Somit siehst du, wer von ihnen auf dem Friedhof oder im AFK-Modus ist."
+	, "(entfernt)Mit diesem Befehl wird der /id-Befehl für alle BLer (/bl) angezeigt. Somit siehst du, wer von ihnen auf dem Friedhof oder im AFK-Modus ist."
 	, "Nach der Eingabe dieses Textbinds wirst du nach der Nummer, dem Namen oder der ID einer Person gefragt.`nDann wird diese Person angerufen (ihr braucht also nicht /nummer einzugeben)."
 	, "Mit diesem Textbind werden einige laufende Funktionen (aktuell nur /kame) des sBinders gestoppt."
 	, "Gibt alle Textbinds, die den sBinder direkt steuern, sortiert im Chat aus."
@@ -8236,14 +8285,15 @@ else{
 	, "Schaltet die /me-Texte zu den Animationen an bzw. aus."
 	, "Nach der Eingabe dieses Textbinds wirst du nach der Nummer, dem Namen oder der ID einer Person gefragt.`nDann wird dieser Person eine SMS geschickt (ihr braucht also nicht /nummer einzugeben)."
 	, "Nach der Eingabe dieses Textbinds wirst du nach der Nummer, dem Namen oder der ID einer Person gefragt.`nDann wird diese Person über eine Telefonzelle, also anonym, angerufen (ihr braucht also nicht /nummer einzugeben)."
-	, "Dieser Textbind zeigt die Leader der eingegebenen Fraktion (sowohl online als auch offline).`nDer Fraktionsname kann jeder bekannte Name der Fraktion sein (Z.B. SARD: ""SARD"", ""SA:RD"", ""Medics"", ""Ärzte"", ""Krankenhaus"", ""Rettungsdienst"").`nMit {999999}/leaders id{FFFFFF} kannst du außerdem den /id-Befehl für jeden Leader ausgeben lassen,`nso siehst du z.B., wer von ihnen auf dem Friedhof oder im Gefängnis ist."
+	, "(entfernt)Dieser Textbind zeigt die Leader der eingegebenen Fraktion (sowohl online als auch offline).`nDer Fraktionsname kann jeder bekannte Name der Fraktion sein (Z.B. SARD: ""SARD"", ""SA:RD"", ""Medics"", ""Ärzte"", ""Krankenhaus"", ""Rettungsdienst"").`nMit {999999}/leaders id{FFFFFF} kannst du außerdem den /id-Befehl für jeden Leader ausgeben lassen,`nso siehst du z.B., wer von ihnen auf dem Friedhof oder im Gefängnis ist."
 	, "Nachdem ihr die Nummer (1-8) der Notiz eingegeben habt wird der Inhalt der Notiz zurückgesetzt.`nIhr könnt auch 'all' eingeben, dann werden alle Notizen zurückgesetzt."
-	, "Zeigt alle Mitglieder der angegebenen Fraktion an.`nDer Fraktionsname kann jeder bekannte Name der Fraktion sein (Z.B. SARD: ""SARD"", ""SA:RD"", ""Medics"", ""Ärzte"", ""Krankenhaus"", ""Rettungsdienst"")."
-	, "Zeigt die Mitglieder der angegebenen Fraktion an, die aktuell online sind.`nDer Fraktionsname kann jeder bekannte Name der Fraktion sein (Z.B. SARD: ""SARD"", ""SA:RD"", ""Medics"", ""Ärzte"", ""Krankenhaus"", ""Rettungsdienst"").`nMit {999999}/membersonline id{FFFFFF} bzw. {999999}/checkfrak id{FFFFFF} kannst du außerdem den /id-Befehl für jedes Fraktionsmitglied ausgeben lassen,`nso siehst du z.B., wer von ihnen auf dem Friedhof oder im Gefängnis ist."
-	, "Zeigt alle Mitglieder deiner Fraktion an, die aktuell online sind."
+	, "(entfernt)Zeigt alle Mitglieder der angegebenen Fraktion an.`nDer Fraktionsname kann jeder bekannte Name der Fraktion sein (Z.B. SARD: ""SARD"", ""SA:RD"", ""Medics"", ""Ärzte"", ""Krankenhaus"", ""Rettungsdienst"")."
+	, "(entfernt)Zeigt die Mitglieder der angegebenen Fraktion an, die aktuell online sind.`nDer Fraktionsname kann jeder bekannte Name der Fraktion sein (Z.B. SARD: ""SARD"", ""SA:RD"", ""Medics"", ""Ärzte"", ""Krankenhaus"", ""Rettungsdienst"").`nMit {999999}/membersonline id{FFFFFF} bzw. {999999}/checkfrak id{FFFFFF} kannst du außerdem den /id-Befehl für jedes Fraktionsmitglied ausgeben lassen,`nso siehst du z.B., wer von ihnen auf dem Friedhof oder im Gefängnis ist."
+	, "(entfernt)Zeigt alle Mitglieder deiner Fraktion an, die aktuell online sind."
+	, "(entfernt)"
 	, "Der Textbind liest die /oldstats aus und rechnet aus diesen aus, wann der nächste Payday ist."
 	, "Dieser Textbind ermittelt einige Informationen über einen beliebigen Spieler. Dabei ist es vollkommen egal, ob dieser Spieler Zivilist ist oder einen Platz in einer Fraktion hat.`nAllerdings kann es sein, dass neue Spieler oder Spieler mit einem Namechange noch nicht gefunden werden."
-	, "Beendet die Sitzung auf Nova und verbindet neu."
+	, "(entfernt)Beendet die Sitzung auf Nova und verbindet neu."
 	, "Der Textbind liest die /oldstats aus und rechnet aus diesen aus, wie viele Respektpunkte du noch bis zum nächsten Level benötigst."
 	, "Mit diesem Textbind kannst du im Spiel deinen Beruf ändern. Gib auf die Frage nach deinem neuen Beruf einfach den Beruf ein und drücke danach J."
 	, "Bei diesem Textbind wirst du nach der Summe gefragt, die du auf der Hand haben willst. Dann wird dein Geld auf diesen Wert gesetzt.`nDu musst dafür an der Bank oder an einem Bankautomaten sein."
@@ -10212,7 +10262,7 @@ return
 Suspend Permit
 SendChat("/take diebesgut " GetClosestPlayerId())
 return
-::/respawn::
+::/fvrespawn::
 Suspend Permit
 SendChat("/r >>> CAR RESPAWN IN 10 SEKUNDEN <<< ")
 Sleep, 5000
@@ -10232,6 +10282,55 @@ return
 Suspend Permit
 SendChat("/showbadge " GetClosestPlayerId())
 return
+::/sperrzone::
+Suspend Permit
+sperrzone := GetPlayerZone()
+if (sperrzone != "") {
+	SendChat("/gov Das Gebiet " GetPlayerZone() " gilt nun ab sofort als Sperrgebiet.")
+	Sleep, 100
+	SendChat("/gov Jeglicher unautorisierter Aufenthalt in dieser Zone wird geahndet.")
+	} else {
+		AddChatMessage("{DF0101}FEHLER:{FFFFFF}Die Zone konnte nicht ermittelt werden.")
+}
+return
+
+::/offsperrzone::
+Suspend Permit
+if (sperrzone != "") {
+	SendChat("/gov Das Gebiet " %sperrzone% " ist nun wieder freigegeben.")
+	sperrzone := ""
+	} else {
+		AddChatMessage("{DF0101}FEHLER:{FFFFFF}Es besteht keine aktive Sperrzone!")
+}
+return
+
+::/rb::
+Suspend Permit
+SendChat("/roadblock")
+SendInput,{Enter}
+SendChat("/roadblock")
+SendInput, {Down}
+Sleep, 10
+SendInput, {Down}
+Sleep, 10
+SendInput, {Down}
+Sleep, 10
+SendInput, {Down}
+Sleep, 10
+SendInput, {Down}
+Sleep, 10
+SendInput, {Enter}
+Return
+::/friedhoftimer::
+Suspend Permit
+fTimerEnabled := !fTimerEnabled
+IniWrite, %fTimerEnabled%, %INIFile%, Settings, FriedhofTimer
+if(fTimerEnabled)
+AddChatMessage("Der Friedhofstimer wurde {00AA00}aktiviert{FFFFFF}.")
+else
+AddChatMessage("Der Friedhofstimer wurde {FF1100}deaktiviert{FFFFFF}.")
+return
+
 /*
 ö::
 AddChatMessage(IsChatOpen())
