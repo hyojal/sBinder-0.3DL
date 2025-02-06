@@ -10787,6 +10787,20 @@ Suspend Permit
 SendChat("/checkfrak 19")
 return
 
+::/sw::
+Suspend Permit
+SendChat("/S Falls Sie nicht umgehend das Sperrgebiet verlassen, werden wir Sie unverzüglich vollstrecken!")
+sperrplayer := GetClosestPlayerId()
+Sleep, 50
+SendChat("/S >>> 3 <<<")
+Sleep, 50
+SendChat("/S >>> 2 <<<")
+Sleep, 50
+SendChat("/S >>> 1 <<<")
+Sleep, 50
+SendChat("/id " %sperrplayer% "")
+AddChatMessage("{fcf003}S-BINDER: {FFFFFF}Hat der Spieler {fcf003}" %sperrplayer% " {fcf003}das Sperrgebiet verlassen ? Falls nicht -> /sg")
+return
 /*
 ö::
 AddChatMessage(IsChatOpen())
