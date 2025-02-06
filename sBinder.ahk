@@ -10716,6 +10716,77 @@ Sleep, 50
 SendInput, {Enter}
 Return
 
+
+::/lcn::
+Suspend Permit
+SendChat("/checkfrak 5")
+return
+
+::/yakuza::
+Suspend Permit
+SendChat("/checkfrak 6")
+return
+
+::/pd::
+Suspend Permit
+SendChat("/checkfrak 1")
+return
+
+::/fbi::
+Suspend Permit
+SendChat("/checkfrak 2")
+return
+
+::/army::
+Suspend Permit
+SendChat("/checkfrak 3")
+return
+
+::/medics::
+Suspend Permit
+SendChat("/checkfrak 4")
+return
+
+::/regierung::
+Suspend Permit
+SendChat("/checkfrak 7")
+return
+
+::/samag::
+Suspend Permit
+SendChat("/checkfrak 9")
+return
+
+::/scarfo::
+Suspend Permit
+SendChat("/checkfrak 11")
+return
+
+::/ballas::
+Suspend Permit
+SendChat("/checkfrak 13")
+return
+
+::/gs::
+Suspend Permit
+SendChat("/checkfrak 14")
+return
+
+::/ck::
+Suspend Permit
+SendChat("/checkfrak 17")
+return
+
+::/kf::
+Suspend Permit
+SendChat("/checkfrak 18")
+return
+
+::/vagos::
+Suspend Permit
+SendChat("/checkfrak 19")
+return
+
 /*
 ö::
 AddChatMessage(IsChatOpen())
