@@ -10817,6 +10817,16 @@ sleep 1000
 SendChat("/s >>> GO <<<")
 return
 
+::/locationd::
+Suspend Permit
+SendChat("/d Ich befinde mich aktuell in " GetPlayerZone() ","GetPlayerCity()" im Fahrzeug " GetVehicleModelName() ".Ich habe "GetPlayerArmor()" Armor und "GetPlayerHealth()" HP")
+return
+
+::/locationr::
+Suspend Permit
+SendChat("/r Ich befinde mich aktuell in " GetPlayerZone() ","GetPlayerCity()" im Fahrzeug " GetVehicleModelName() ".Ich habe "GetPlayerArmor()" Armor und "GetPlayerHealth()" HP")
+return
+
 /*
 ö::
 AddChatMessage(IsChatOpen())
