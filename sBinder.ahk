@@ -57,7 +57,7 @@ global ADDR_VEHICLE_Y               := 0x48          ;Vehicle Speed Y
 global ADDR_VEHICLE_Z               := 0x4C          ;Vehicle Speed Z
 global oAirplaneModels := [417, 425, 447, 460, 469, 476, 487, 488, 497, 511, 512, 513, 519, 520, 548, 553, 563, 577, 592, 593]
 global oBikeModels := [481,509,510]
-global ovehicleNames := ["Landstalker","Bravura","Buffalo","Linerunner","Perrenial","Sentinel","Dumper","Firetruck","Trashmaster","Stretch","Manana","Infernus","Voodoo","Pony","Mule","Cheetah","Ambulance","Leviathan","Moonbeam","Esperanto","Taxi","Washington","Bobcat","Whoopee","BFInjection","Hunter","Premier","Enforcer","Securicar","Banshee","Predator","Bus","Rhino","Barracks","Hotknife","Trailer","Previon","Coach","Cabbie","Stallion","Rumpo","RCBandit","Romero","Packer","Monster","Admiral","Squalo","Seasparrow","Pizzaboy","Tram","Trailer","Turismo","Speeder","Reefer","Tropic","Flatbed","Yankee","Caddy","Solair","Berkley'sRCVan","Skimmer","PCJ-600","Faggio","Freeway","RCBaron","RCRaider","Glendale","Oceanic","Sanchez","Sparrow","Patriot","Quad","Coastguard","Dinghy","Hermes","Sabre","Rustler","ZR-350","Walton","Regina","Comet","BMX","Burrito","Camper","Marquis","Baggage","Dozer","Maverick","NewsChopper","Rancher","FBIRancher","Virgo","Greenwood","Jetmax","Hotring","Sandking","BlistaCompact","Polizei Maverick","Boxvillde","Benson","Mesa","RCGoblin","HotringRacerA","HotringRacerB","BloodringBanger","Rancher","SuperGT","Elegant","Journey","Bike","MountainBike","Beagle","Cropduster","Stunt","Tanker","Roadtrain","Nebula","Majestic","Buccaneer","Shamal","Hydra","FCR-900","NRG-500","HPV1000","Zement Truck","Abschleppwagen","Fortune","Cadrona","FBI Truck","Willard","Gabelstapler","Traktor","Combine","Feltzer","Remington","Slamvan","Blade","Freight","Streak","Vortex","Vincent","Bullet","Clover","Sadler","Firetruck","Hustler","Intruder","Primo","Cargobob","Tampa","Sunrise","Merit","Utility","Nevada","Yosemite","Windsor","Monster","Monster","Uranus","Jester","Sultan","Stratum","Elegy","Raindance","RCTiger","Flash","Tahoma","Savanna","Bandito","FreightFlat","StreakCarriage","Kart","Mower","Dune","Sweeper","Broadway","Tornado","AT-400","DFT-30","Huntley","Stafford","BF-400","NewsVan","Tug","Trailer","Emperor","Wayfarer","Euros","Hotdog","Club","FreightBox","Trailer","Andromada","Dodo","RCCam","Launch","LS-Streifenwagen","SF-Streifenwagen","LV-Streifenwagen","Polizei Ranger","Picador","S.W.A.T","Alpha","Phoenix","GlendaleShit","SadlerShit","Luggage","Luggage","Stairs","Boxville","Tiller","UtilityTrailer"]
+global ovehicleNames := ["Landstalker","Bravura","Buffalo","Linerunner","Perrenial","Sentinel","Dumper","Firetruck","Trashmaster","Stretch","Manana","Infernus","Voodoo","Pony","Mule","Cheetah","Ambulance","Leviathan","Moonbeam","Esperanto","Taxi","Washington","Bobcat","Whoopee","BFInjection","Hunter","Premier","Enforcer","Securicar","Banshee","Predator","Bus","Rhino","Barracks","Hotknife","Trailer","Previon","Coach","Cabbie","Stallion","Rumpo","RCBandit","Romero","Packer","Monster","Admiral","Squalo","Seasparrow","Pizzaboy","Tram","Trailer","Turismo","Speeder","Reefer","Tropic","Flatbed","Yankee","Caddy","Solair","Berkley'sRCVan","Skimmer","PCJ-600","Faggio","Freeway","RCBaron","RCRaider","Glendale","Oceanic","Sanchez","Sparrow","Patriot","Quad","Coastguard","Dinghy","Hermes","Sabre","Rustler","ZR-350","Walton","Regina","Comet","BMX","Burrito","Camper","Marquis","Baggage","Dozer","Maverick","NewsChopper","Rancher","FBI Rancher","Virgo","Greenwood","Jetmax","Hotring","Sandking","BlistaCompact","Polizei Maverick","Boxvillde","Benson","Mesa","RCGoblin","HotringRacerA","HotringRacerB","BloodringBanger","Rancher","SuperGT","Elegant","Journey","Bike","MountainBike","Beagle","Cropduster","Stunt","Tanker","Roadtrain","Nebula","Majestic","Buccaneer","Shamal","Hydra","FCR-900","NRG-500","HPV1000","Zement Truck","Abschleppwagen","Fortune","Cadrona","FBI Truck","Willard","Gabelstapler","Traktor","Combine","Feltzer","Remington","Slamvan","Blade","Freight","Streak","Vortex","Vincent","Bullet","Clover","Sadler","Firetruck","Hustler","Intruder","Primo","Cargobob","Tampa","Sunrise","Merit","Utility","Nevada","Yosemite","Windsor","Monster","Monster","Uranus","Jester","Sultan","Stratum","Elegy","Raindance","RCTiger","Flash","Tahoma","Savanna","Bandito","FreightFlat","StreakCarriage","Kart","Mower","Dune","Sweeper","Broadway","Tornado","AT-400","DFT-30","Huntley","Stafford","BF-400","NewsVan","Tug","Trailer","Emperor","Wayfarer","Euros","Hotdog","Club","FreightBox","Trailer","Andromada","Dodo","RCCam","Launch","LS-Streifenwagen","SF-Streifenwagen","LV-Streifenwagen","Polizei Ranger","Picador","S.W.A.T","Alpha","Phoenix","GlendaleShit","SadlerShit","Luggage","Luggage","Stairs","Boxville","Tiller","UtilityTrailer"]
 global oweaponNames := ["Fist","Brass Knuckles","Golf Club","Nightstick","Knife","Baseball Bat","Shovel","Pool Cue","Katana","Chainsaw","Purple Dildo","Dildo","Vibrator","Silver Vibrator","Flowers","Cane","Grenade","Tear Gas","Molotov Cocktail", "", "", "", "9mm","Silenced 9mm","Desert Eagle","Shotgun","Sawnoff Shotgun","Combat Shotgun","Micro SMG/Uzi","MP5","AK-47","M4","Tec-9","Country Rifle","Sniper Rifle","RPG","HS Rocket","Flamethrower","Minigun","Satchel Charge","Detonator","Spraycan","Fire Extinguisher","Camera","Night Vis Goggles","Thermal Goggles","Parachute"]
 global oradiostationNames := ["Playback FM", "K Rose", "K-DST", "Bounce FM", "SF-UR", "Radio Los Santos", "Radio X", "CSR 103.9", "K-JAH West", "Master Sounds 98.3", "WCTR Talk Radio", "User Track Player", "Radio Off"]
 global oweatherNames := ["EXTRASUNNY_LA", "SUNNY_LA", "EXTRASUNNY_SMOG_LA", "SUNNY_SMOG_LA", "CLOUDY_LA", "SUNNY_SF", "EXTRASUNNY_SF", "CLOUDY_SF", "RAINY_SF", "FOGGY_SF", "SUNNY_VEGAS", "EXTRASUNNY_VEGAS", "CLOUDY_VEGAS", "EXTRASUNNY_COUNTRYSIDE", "SUNNY_COUNTRYSIDE", "CLOUDY_COUNTRYSIDE", "RAINY_COUNTRYSIDE", "EXTRASUNNY_DESERT", "SUNNY_DESERT", "SANDSTORM_DESERT", "UNDERWATER", "EXTRACOLOURS_1", "EXTRACOLOURS_2"]
@@ -4144,7 +4144,7 @@ if(InStr(data,"API rate limit exceeded") OR !InStr(subStr(data,11,3),"."))
 gitVersion := 0 
 IfNotExist, sounds
 FileCreateDir , sounds
-global soundVolume
+global soundVolume, soundTimer
 if(!FileExist("sounds\damageinc.mp3"))
 URLDownloadToFile, https://www.myinstants.com/media/sounds/roblox-oof-no-delay.mp3, sounds\damageinc.mp3
 if(!FileExist("sounds\kill.mp3"))
@@ -5486,6 +5486,8 @@ gosub HotkeysDefine
 gosub Downloads
 if(OverlayActive AND UseAPI)
 	SetTimerNow("Overlay", 200)
+	if(OverlayActive AND UseAPI)
+	SetTimerNow("Sounds", 20)
 Sleep, 20
 if(Startup_Fraps)
 	SetTimer, RunFraps, % Abs(Startup_Fraps_Delay) * -1000
@@ -7523,79 +7525,26 @@ Loop, 50
 }
 return
 Overlay:
-if(!UseAPI){
-	SetTimer, Overlay, Off
-	return
-}
 GetChatLine(0, chat,1)
-if(InStr(chat,"SERVER: Du hast gerade einen Mord begangen. Achtung!")AND !InStr(chat, "sagt") AND !InStr(chat, ")") AND !InStr(chat, "*") AND !InStr(chat, "schreit") AND !InStr(chat, "flüstert"))
+if(InStr(chat,"SERVER: Du hast gerade einen Mord begangen. Achtung!") AND !InStr(chat, "sagt") AND !InStr(chat, ")") AND !InStr(chat, "*") AND !InStr(chat, "schreit") AND !InStr(chat, "flüstert"))
 {
 if((killBind!="") AND (killBind!="ERROR"))
 {
-BindReplace(message)
+BindReplace(killBind)
 }
 if(killSoundEnabled)
 {
 if(subStr(chat, 1, 10)!=lastKillTime)
 {
+if(A_TickCount>=soundTimer)
+{
 lastKillTime := subStr(chat, 1, 10)
 SoundGet originalVolume
 SoundSet soundVolume
+soundTimer := A_TickCount + 1600
 SoundPlay, sounds\kill.mp3, 1
 SoundSet originalVolume
 }
-}
-}
-if(fishingSoundEnabled)
-{
-if(InStr(chat,"Dein Fang scheint sich") AND !InStr(chat, "sagt") AND !InStr(chat, ")") AND !InStr(chat, "*") AND !InStr(chat, "schreit") AND !InStr(chat, "flüstert"))
-{
-if(A_TickCount>=timer)
-{
-SoundGet originalVolume
-SoundSet soundVolume
-SoundPlay, sounds\fishing.mp3, 1
-SoundSet originalVolume
-timer := A_TickCount + 15000
-}
-return
-}
-}
-
-if(damageSoundEnabled)
-{
-if((GetPlayerHealth() < lastPlayerHealth-10) OR (GetPlayerArmor() < lastPlayerArmor-10))
-{
-if((GetPlayerState()==1) OR (GetPlayerState()==50))
-{
-chatlines := GetChatLines(5)
-if((!InStr(chatlines,"Connected to German Nova") AND (!InStr(chatlines,"FMOTD:") AND (!InStr(chatlines,"SA-MP 0.3.DL-R1")))))
-{
-if(A_TickCount>=timer)
-{
-SoundGet originalVolume
-SoundSet soundVolume
-SoundPlay, sounds\damageinc.mp3, 1
-SoundSet originalVolume
-timer := A_TickCount + 1000
-}
-}
-}
-}
-}
-lastPlayerArmor := GetPlayerArmor()
-lastPlayerHealth := GetPlayerHealth()
-if(deathSoundEnabled)
-{
-if(InStr(chat,"NOTRUF: Da dein NovaHealth") AND !InStr(chat, "sagt") AND !InStr(chat, ")") AND !InStr(chat, "*") AND !InStr(chat, "schreit") AND !InStr(chat, "flüstert"))
-{
-if(A_TickCount>=timer)
-{
-SoundGet originalVolume
-SoundSet soundVolume
-SoundPlay, sounds\wasted.mp3, 1
-SoundSet originalVolume
-timer := A_TickCount + 8000
 }
 }
 }
@@ -7618,6 +7567,11 @@ dtimer := chat1 * 1000 + A_TickCount
 }
 else
 {
+if((dtimer>A_TickCount) AND (dtimer<A_TickCount+10000))
+{
+SendChat("/friedhof")
+dtimer := 0
+}
 if((ftimer<A_TickCount) AND (dtimer>A_TickCount))
 {
 if(GetPlayerSkinId()!=162)
@@ -7634,6 +7588,62 @@ ftimer := A_TickCount + 30000
 }
 return
 
+Sounds:
+
+if(fishingSoundEnabled)
+{
+if(InStr(chat,"Dein Fang scheint sich") AND !InStr(chat, "sagt") AND !InStr(chat, ")") AND !InStr(chat, "*") AND !InStr(chat, "schreit") AND !InStr(chat, "flüstert"))
+{
+if(A_TickCount>=soundTimer)
+{
+SoundGet originalVolume
+SoundSet soundVolume
+soundTimer := A_TickCount + 15000
+SoundPlay, sounds\fishing.mp3, 1
+SoundSet originalVolume
+}
+return
+}
+}
+
+if(damageSoundEnabled)
+{
+if((GetPlayerHealth() < lastPlayerHealth-10) OR (GetPlayerArmor() < lastPlayerArmor-10))
+{
+if((GetPlayerState()==1) OR (GetPlayerState()==50))
+{
+chatlines := GetChatLines(5)
+if((!InStr(chatlines,"Connected to German Nova") AND (!InStr(chatlines,"FMOTD:") AND (!InStr(chatlines,"SA-MP 0.3.DL-R1")))))
+{
+if(A_TickCount>=soundTimer)
+{
+SoundGet originalVolume
+SoundSet soundVolume
+soundTimer := A_TickCount + 330
+SoundPlay, sounds\damageinc.mp3, 1
+SoundSet originalVolume
+}
+}
+}
+}
+}
+lastPlayerArmor := GetPlayerArmor()
+lastPlayerHealth := GetPlayerHealth()
+if(deathSoundEnabled)
+{
+if(InStr(chat,"NOTRUF: Da dein NovaHealth") AND !InStr(chat, "sagt") AND !InStr(chat, ")") AND !InStr(chat, "*") AND !InStr(chat, "schreit") AND !InStr(chat, "flüstert"))
+{
+if(A_TickCount>=soundTimer)
+{
+SoundGet originalVolume
+SoundSet soundVolume
+soundTimer := A_TickCount + 8000
+SoundPlay, sounds\wasted.mp3, 1
+SoundSet originalVolume
+}
+}
+}
+return
 ::/kstop::
 Del::
 Suspend
@@ -7882,10 +7892,11 @@ AddChatMessage("Ping google.com (Referenz): {88AA62}" clearping("google.com", 40
 return
 ::/kdonut::
 Suspend Permit
-maxDonuts := PlayerInput("Gib die maximale Kapazität ein: ")
+maxDonuts := PlayerInput("Gib die maximale Anzahl ein: ")
 SendChat("/oldstats")
-chat := WaitForChatLine(3, "Donuts: [")
-RegExMatch(chat, "Donuts: \[(.*)\]", chat)
+chat := WaitForChatLine(3, "Donuts:[")
+RegExMatch(chat, "Donuts:\[(.*)\]", chat)
+AddChatMessage(chat1)
 SendChat("/get donut " maxDonuts - chat1)
 return
 ::/kame::
@@ -8329,6 +8340,7 @@ return
 Suspend Permit
 message := PlayerInput("Gib einen Killbind ein: ")
 IniWrite, %message%, %INIFile%, Settings, Killbinder
+killBind := message
 if(message!="")
 AddChatMessage("Aktueller Bind: "message)
 else
@@ -10285,8 +10297,8 @@ return
 ::/sperrzone::
 Suspend Permit
 sperrzone := GetPlayerZone()
-if (sperrzone != "") {
-	SendChat("/gov Das Gebiet " GetPlayerZone() " gilt nun ab sofort als Sperrgebiet.")
+if ((sperrzone != "") AND (sperrzone!="Interior")) {
+	SendChat("/gov Das Gebiet " %sperrzone% " gilt nun ab sofort als Sperrgebiet.")
 	Sleep, 100
 	SendChat("/gov Jeglicher unautorisierter Aufenthalt in dieser Zone wird geahndet.")
 	} else {
@@ -10296,7 +10308,8 @@ return
 
 ::/offsperrzone::
 Suspend Permit
-if (sperrzone != "") {
+sperrzone := GetPlayerZone()
+if ((sperrzone != "") AND (sperrzone!="Interior")) {
 	SendChat("/gov Das Gebiet " %sperrzone% " ist nun wieder freigegeben.")
 	sperrzone := ""
 	} else {
