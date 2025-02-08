@@ -7895,8 +7895,7 @@ Suspend Permit
 maxDonuts := PlayerInput("Gib die maximale Anzahl ein: ")
 SendChat("/oldstats")
 chat := WaitForChatLine(3, "Donuts:[")
-RegExMatch(chat, "Donuts:\[(.*)\]", chat)
-AddChatMessage(chat1)
+RegExMatch(chat, "Donuts:\[(.*)\] Schau", chat)
 SendChat("/get donut " maxDonuts - chat1)
 return
 ::/kame::
