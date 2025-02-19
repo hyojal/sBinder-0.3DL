@@ -7527,7 +7527,7 @@ return
 AutoLicht:
 if(WinActive("ahk_group GTASA"))
 if(autoLichtEnabled)
-if((A_Hour<=8)||(A_Hour>=21))
+if((A_Hour<=7)||(A_Hour>=21))
 if(IsPlayerInAnyVehicle())
 if((GetVehicleType()==1) || (GetVehicleType()==4))
 if(IsPlayerDriver())
