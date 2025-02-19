@@ -4130,9 +4130,10 @@ if(UseAPI){
 	}
 }
 */
-global ftimer, dtimer, fTimerEnabled, lastKillTime, killBind
+global ftimer, dtimer, fTimerEnabled, lastKillTime, killBind, autoLichtEnabled
 IniRead, killBind, %INIFile%, Settings, Killbinder
 IniRead, fTimerEnabled, %INIFile%, Settings, FriedhofTimer, 1
+IniRead, autoLichtEnabled, %INIFile%, Settings, AutoLicht, 1
 IniWrite, % 1, %INIFile%, Settings, UseAPI
 data := HTTPData("https://api.github.com/repos/hyojal/sBinder-0.3DL/tags")
 if !RegExMatch(subStr(data,14,1),"[0-9]+")
@@ -5484,10 +5485,9 @@ gosub FrakChangeGuiBuild
 
 gosub HotkeysDefine
 gosub Downloads
-if(OverlayActive AND UseAPI)
+	SetTimerNow("AutoLicht",500)
 	SetTimerNow("Overlay", 200)
-	if(OverlayActive AND UseAPI)
-	SetTimerNow("Sounds", 20)
+	SetTimerNow("Sounds", 50)
 Sleep, 20
 if(Startup_Fraps)
 	SetTimer, RunFraps, % Abs(Startup_Fraps_Delay) * -1000
@@ -5816,7 +5816,7 @@ TempGUI2GuiClose:
 Gui, TempGUI2:Destroy
 return
 Variables:
-Version := "2.56"
+Version := "2.57"
 Build := 84
 active := 1
 ;INIFile := A_ScriptDir "\keybinder.ini"
@@ -7524,6 +7524,17 @@ Loop, 50
 	Sleep, 2000
 }
 return
+AutoLicht:
+if(WinActive("ahk_group GTASA"))
+if(autoLichtEnabled)
+if((A_Hour<=8)||(A_Hour>=21))
+if(IsPlayerInAnyVehicle())
+if((GetVehicleType()==1) || (GetVehicleType()==4))
+if(IsPlayerDriver())
+if(!GetVehicleLightState())
+SendChat("/cveh licht")
+return
+
 Overlay:
 GetChatLine(0, chat,1)
 if(InStr(chat,"SERVER: Du hast gerade einen Mord begangen. Achtung!") AND !InStr(chat, "sagt") AND !InStr(chat, ")") AND !InStr(chat, "*") AND !InStr(chat, "schreit") AND !InStr(chat, "flüstert"))
@@ -7895,7 +7906,7 @@ Suspend Permit
 maxDonuts := PlayerInput("Gib die maximale Anzahl ein: ")
 SendChat("/oldstats")
 chat := WaitForChatLine(3, "Donuts:[")
-RegExMatch(chat, "Donuts:\[(.*)\] Schau", chat)
+RegExMatch(chat, "Donuts:\[(.*)\] ", chat)
 SendChat("/get donut " maxDonuts - chat1)
 return
 ::/kame::
@@ -10341,6 +10352,15 @@ if(fTimerEnabled)
 AddChatMessage("Der Friedhofstimer wurde {00AA00}aktiviert{FFFFFF}.")
 else
 AddChatMessage("Der Friedhofstimer wurde {FF1100}deaktiviert{FFFFFF}.")
+return
+::/autolicht::
+Suspend Permit
+autoLichtEnabled := !autoLichtEnabled
+IniWrite, %autoLichtEnabled%, %INIFile%, Settings, AutoLicht
+if(autoLichtEnabled)
+AddChatMessage("Das automatische Fahrzeuglicht wurde {00AA00}aktiviert{FFFFFF}.")
+else
+AddChatMessage("Das automatische Fahrzeuglicht wurde {FF1100}deaktiviert{FFFFFF}.")
 return
 
 /*
