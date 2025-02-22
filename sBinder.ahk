@@ -5816,7 +5816,7 @@ TempGUI2GuiClose:
 Gui, TempGUI2:Destroy
 return
 Variables:
-Version := "2.57"
+Version := "2.58"
 Build := 84
 active := 1
 ;INIFile := A_ScriptDir "\keybinder.ini"
@@ -7527,10 +7527,11 @@ return
 AutoLicht:
 if(WinActive("ahk_group GTASA"))
 if(autoLichtEnabled)
-if((A_Hour<=8)||(A_Hour>=21))
+if((A_Hour<=7)||(A_Hour>=21))
 if(IsPlayerInAnyVehicle())
 if((GetVehicleType()==1) || (GetVehicleType()==4))
 if(IsPlayerDriver())
+if((GetVehicleHealth()==1000) || (GetVehicleHealth()==1500) || (GetVehicleHealth()==2000) || (GetVehicleHealth()==2500) || (GetVehicleHealth()==3000))
 if(!GetVehicleLightState())
 SendChat("/cveh licht")
 return
